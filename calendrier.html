@@ -187,26 +187,46 @@
     </div>
 
     <script>
-        window.onload = function() {
-            // On récupère les appréciations sauvées par l'admin
-            const appreciations = JSON.parse(localStorage.getItem('skiAppreciations')) || {};
+    window.onload = function() {
+        // 1. On récupère les résumés (appréciations)
+        const appreciations = JSON.parse(localStorage.getItem('skiAppreciations')) || {};
+        
+        // 2. On récupère les albums Google Photos enregistrés
+        const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
 
-            document.querySelectorAll('.event-card').forEach(card => {
-                const id = card.getAttribute('data-sortie');
-                const textDiv = card.querySelector('.appreciation-text');
-                const badge = card.querySelector('.status-badge');
+        document.querySelectorAll('.event-card').forEach(card => {
+            const id = card.getAttribute('data-sortie');
+            const textDiv = card.querySelector('.appreciation-text');
+            const badge = card.querySelector('.status-badge');
+            const btnPhotos = card.querySelector('.btn-photos');
 
-                if (appreciations[id] && appreciations[id].trim() !== "") {
-                    // Si une appréciation existe
-                    textDiv.innerText = "“ " + appreciations[id] + " ”";
-                    textDiv.style.display = "block";
-                    
-                    // On change le statut
-                    badge.innerText = "PASSÉE";
-                    card.classList.add('past');
-                }
-            });
-        };
-    </script>
+            // --- GESTION DU RÉSUMÉ ET DU STATUT ---
+            if (appreciations[id] && appreciations[id].trim() !== "") {
+                textDiv.innerText = "“ " + appreciations[id] + " ”";
+                textDiv.style.display = "block";
+                badge.innerText = "PASSÉE";
+                card.classList.add('past');
+            }
+
+            // --- GESTION DU LIEN PHOTOS ---
+            // On cherche si un album contient le numéro de la sortie dans son titre
+            const albumCorrespondant = albums.find(a => 
+                a.title.toLowerCase().includes("sortie " + id) || 
+                a.title.toLowerCase().includes("sortie #" + id)
+            );
+
+            if (albumCorrespondant) {
+                // Si on trouve un album Google Photos pour cette sortie
+                btnPhotos.href = albumCorrespondant.link;
+                btnPhotos.target = "_blank"; // Ouvre dans un nouvel onglet
+                btnPhotos.style.background = "#4285F4"; // Couleur Google
+                btnPhotos.innerHTML = '<i class="fab fa-google"></i> Album';
+            } else {
+                // Sinon, on laisse le lien vers la page galerie par défaut
+                btnPhotos.href = "galerie.html#" + id;
+            }
+        });
+    };
+</script>
 </body>
 </html>
