@@ -9,293 +9,265 @@
     <style>
         :root { --blue: #009ee0; --red: #e30613; --dark: #1a1a1a; --gray: #f4f7f9; --green: #2ecc71; --orange: #f39c12; }
         * { box-sizing: border-box; scroll-behavior: smooth; }
-        body { font-family: 'Montserrat', sans-serif; margin: 0; color: #333; line-height: 1.6; padding-top: 0; background-color: var(--gray); }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; color: #333; line-height: 1.6; background-color: var(--gray); }
 
         /* Bandeau Alerte Dynamique */
         #annuaire-alerte { display: none; width: 100%; position: sticky; top: 0; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .banner-item { padding: 15px; text-align: center; font-weight: 900; text-transform: uppercase; font-size: 0.85rem; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .banner-item { padding: 12px; text-align: center; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
         .bg-green { background: var(--green); }
         .bg-orange { background: var(--orange); }
-        .banner-item a { color: white; text-decoration: underline; margin-left: 10px; }
+        .banner-item a { color: white; text-decoration: underline; margin-left: 5px; }
 
         /* Navigation */
-        nav { position: sticky; top: 0; width: 100%; background: white; display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
-        .logo img { height: 50px; }
-        nav ul { list-style: none; display: flex; gap: 20px; margin: 0; }
-        nav ul li a { text-decoration: none; color: var(--dark); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
+        nav { 
+            position: sticky; top: 0; width: 100%; background: white; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 5%; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.1); 
+        }
+        .logo img { height: 40px; } /* Plus petit sur mobile */
+        
+        /* Menu Mobile */
+        .nav-links { list-style: none; display: flex; gap: 20px; margin: 0; }
+        .nav-links li a { text-decoration: none; color: var(--dark); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; }
+        
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--blue); }
 
         /* Hero */
-        .hero { height: 50vh; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1600'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
-        .hero h1 { font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 900; margin: 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .hero { height: 40vh; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1600'); background-size: cover; background-position: center; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; }
+        .hero h1 { font-size: clamp(1.5rem, 8vw, 3rem); font-weight: 900; margin: 0; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); line-height: 1.2; }
 
         /* Section Bourse aux Skis */
-        #bourse-section { display: none; padding: 40px 10%; background: #fff3cd; border-bottom: 2px solid #ffeeba; text-align: center; }
-        .bourse-card { display: inline-block; background: white; padding: 25px 45px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px dashed #856404; }
-        .bourse-card h2 { color: #856404 !important; border: none !important; margin-bottom: 10px !important; }
+        #bourse-section { display: none; padding: 20px 5%; background: #fff3cd; border-bottom: 2px solid #ffeeba; text-align: center; }
+        .bourse-card { display: block; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px dashed #856404; max-width: 500px; margin: 0 auto; }
+        .bourse-card h2 { color: #856404 !important; border: none !important; margin-bottom: 5px !important; font-size: 1.2rem; }
 
         /* Sections */
-        section { padding: 60px 10%; }
+        section { padding: 40px 5%; }
         .bg-white { background: white; }
-        h2 { color: var(--blue); border-left: 6px solid var(--red); padding-left: 15px; text-transform: uppercase; margin-bottom: 30px; font-weight: 900; }
+        h2 { color: var(--blue); border-left: 6px solid var(--red); padding-left: 12px; text-transform: uppercase; margin-bottom: 25px; font-weight: 900; font-size: 1.3rem; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); position: relative; border-top: 4px solid var(--blue); transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); border-top: 4px solid var(--blue); }
 
-        /* Formulaire & Lock */
-        .form-box { position: relative; overflow: hidden; }
+        /* Formulaire */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; /* Évite le zoom auto sur iPhone */ }
+        label { font-weight: bold; font-size: 0.75rem; color: #666; display: block; margin-top: 10px; }
+
+        /* Overlay Verrouillé */
         .locked-overlay { 
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(255,255,255,0.95); z-index: 100; flex-direction: column; 
-            justify-content: center; align-items: center; text-align: center; padding: 20px;
+            background: rgba(255,255,255,0.96); z-index: 100; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center; padding: 20px; border-radius: 15px;
         }
-        .locked-overlay i { font-size: 3rem; color: var(--red); margin-bottom: 10px; }
-
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; margin-top: 5px; }
-        label { font-weight: bold; font-size: 0.8rem; color: #666; }
 
         /* Boutons */
-        .btn { padding: 18px; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; text-decoration: none; display: inline-block; text-align: center; font-family: inherit; }
-        .btn-red { background: var(--red); color: white; width: 100%; }
-        .btn-blue { background: var(--blue); color: white; width: 100%; }
-        
-        .doc-link { display: flex; align-items: center; padding: 15px; background: #f0f9ff; border-radius: 10px; text-decoration: none; color: var(--blue); font-weight: bold; margin-bottom: 10px; border: 1px solid #d0e8ff; }
-        .doc-link i { margin-right: 15px; color: var(--red); }
+        .btn { padding: 15px 20px; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; text-decoration: none; display: inline-block; text-align: center; width: 100%; }
+        .btn-red { background: var(--red); color: white; }
+        .btn-blue { background: var(--blue); color: white; }
+        .btn-presence { background: #28a745; color: white; border-radius: 50px; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3); width: auto; min-width: 250px; }
 
-        footer { background: var(--dark); color: white; padding: 50px 10%; text-align: center; }
-        .admin-trigger { opacity: 0.3; cursor: pointer; font-size: 0.7rem; margin-top: 20px; display: inline-block; text-decoration: underline; }
+        .doc-link { display: flex; align-items: center; padding: 12px; background: #f0f9ff; border-radius: 10px; text-decoration: none; color: var(--blue); font-weight: bold; margin-bottom: 10px; font-size: 0.85rem; }
+        .doc-link i { margin-right: 10px; color: var(--red); }
 
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+        footer { background: var(--dark); color: white; padding: 40px 5%; text-align: center; font-size: 0.9rem; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav { padding: 10px 20px; }
+            .menu-toggle { display: block; }
+            .nav-links { 
+                display: none; position: absolute; top: 60px; left: 0; width: 100%; 
+                background: white; flex-direction: column; padding: 20px; gap: 15px; 
+                box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
+            }
+            .nav-links.active { display: flex; }
+            .form-grid { grid-template-columns: 1fr; }
+            .hero { height: 35vh; }
+        }
     </style>
 </head>
 <body>
 
     <div id="annuaire-alerte">
         <div id="msg-inscription" class="banner-item bg-green" style="display:none;">
-            <i class="fas fa-skating"></i> Les inscriptions pour la saison sont ouvertes ! <a href="#pre-inscription">Cliquez ici</a>
+            <i class="fas fa-skating"></i> Inscriptions Ouvertes ! <a href="#pre-inscription">M'inscrire</a>
         </div>
         <div id="msg-bourse-banner" class="banner-item bg-orange" style="display:none;">
-            <i class="fas fa-tag"></i> Bourse aux skis : RDV le <span id="date-bourse-banner-display"></span> !
+            <i class="fas fa-tag"></i> Bourse aux skis : le <span id="date-bourse-banner-display"></span>
         </div>
     </div>
 
-    <nav id="main-nav">
+    <nav>
         <div class="logo"><img src="logo.png" alt="Logo"></div>
-        <ul>
-            <li><a href="calendrier.html">Calendrier</a></li>
-            <li><a href="#minibus">Minibus</a></li>
-            <li><a href="#pre-inscription">Inscription</a></li>
-            <li><a href="#aide">Aide</a></li>
+        <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="calendrier.html" onclick="toggleMenu()">Calendrier</a></li>
+            <li><a href="#minibus" onclick="toggleMenu()">Minibus</a></li>
+            <li><a href="#pre-inscription" onclick="toggleMenu()">Inscription</a></li>
+            <li><a href="#aide" onclick="toggleMenu()">Aide</a></li>
         </ul>
     </nav>
 
     <header class="hero">
-        <h1>Ski Club Saint-Alban Leysse</h1>
+        <h1>Ski Club <br>Saint-Alban Leysse</h1>
         <p>Sport & Convivialité en Savoie</p>
     </header>
 
     <section id="bourse-section">
         <div class="bourse-card">
             <h2><i class="fas fa-tag"></i> BOURSE AUX SKIS</h2>
-            <p style="font-weight: 900; font-size: 1.4rem; color: var(--dark); margin: 15px 0;">
-                Rendez-vous le : <span id="bourse-date-display" style="color: var(--red);">[Date non définie]</span>
+            <p style="font-weight: 900; font-size: 1.2rem; color: var(--dark); margin: 10px 0;">
+                RDV le : <span id="bourse-date-display" style="color: var(--red);">[Date]</span>
             </p>
-            <p style="margin: 0; font-size: 0.9rem; color: #856404; font-weight: bold;">Salle des fêtes - Saint Alban Leysse</p>
+            <p style="margin: 0; font-size: 0.8rem; color: #856404;">Salle des fêtes - Saint Alban Leysse</p>
         </div>
     </section>
 	
-	<section style="padding: 20px 10%; text-align: center; background: white;">
-        <a href="presence.html" class="btn" style="background: #28a745; color: white; width: auto; padding: 15px 40px; border-radius: 50px; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);">
-            <i class="fas fa-walking"></i> Je serai présent ce samedi !
+	<section style="padding: 20px 5%; text-align: center; background: white;">
+        <a href="presence.html" class="btn btn-presence">
+            <i class="fas fa-walking"></i> Présence ce samedi
         </a>
 	</section>
 
     <section id="agenda">
-        <h2>Calendrier & Documents</h2>
+        <h2>Calendrier & Infos</h2>
         <div class="grid">
             <div class="card">
                 <h3>Saison 2026</h3>
-                <p>Retrouvez les dates des 10 sorties et les photos des séances passées.</p>
-                <a href="calendrier.html" class="btn btn-blue">Consulter le Calendrier</a>
+                <p>Dates des 10 sorties et photos des séances.</p>
+                <a href="calendrier.html" class="btn btn-blue">Voir le Calendrier</a>
             </div>
             <div class="card" style="border-top-color: var(--red);">
                 <h3>Pièces à fournir</h3>
-                <p>Obligatoires pour valider votre inscription physique :</p>
+                <p>Obligatoires pour valider l'inscription :</p>
                 <a href="questionnaire-sante.pdf" class="doc-link" target="_blank"><i class="fas fa-file-pdf"></i> Questionnaire Santé</a>
-                <a href="attestation-honneur.pdf" class="doc-link" target="_blank"><i class="fas fa-file-pdf"></i> Attestation sur l'honneur</a>
+                <a href="attestation-honneur.pdf" class="doc-link" target="_blank"><i class="fas fa-file-pdf"></i> Attestation honneur</a>
             </div>
         </div>
     </section>
 
     <section id="minibus" class="bg-white">
-        <h2>Le Minibus du Club</h2>
+        <h2>Le Minibus</h2>
         <div class="grid">
             <div class="card">
-                <h3>Prêt aux Associations</h3>
-                <p>Prêt du minibus 9 places pour les associations du canton de Saint-Alban Leysse.</p>
-                <a href="convention.pdf" class="doc-link" target="_blank"><i class="fas fa-file-contract"></i> Convention de mise à disposition</a>
-            </div>
-            <div class="card">
-                <h3>Infos Pratiques</h3>
-                <p><i class="fas fa-id-card"></i> Permis B obligatoire</p>
-                <p><i class="fas fa-gas-pump"></i> Rendre avec le plein et propre</p>
+                <h3>Associations</h3>
+                <p>Prêt du minibus 9 places pour les assos locales.</p>
+                <a href="convention.pdf" class="doc-link" target="_blank"><i class="fas fa-file-contract"></i> Convention (PDF)</a>
             </div>
         </div>
     </section>
 
     <section id="pre-inscription">
-        <h2>Dossier de Pré-Inscription 2026</h2>
-        <div class="card form-box">
+        <h2>Pré-Inscription 2026</h2>
+        <div class="card" style="position:relative; overflow:hidden;">
             <div id="lock-msg" class="locked-overlay">
                 <i class="fas fa-lock"></i>
-                <p>Les pré-inscriptions ne sont pas encore ouvertes.<br>Surveillez le bandeau en haut de page !</p>
+                <p>Les pré-inscriptions ne sont pas encore ouvertes.</p>
             </div>
 
             <form id="saison-form">
-                <div style="background:#e7f3ff; padding:15px; border-radius:8px; margin-bottom:25px; border-left:5px solid var(--blue); font-size: 0.9rem;">
-                    <strong>ÉTAPE 1 :</strong> Remplissez ce formulaire en ligne.<br>
-                    <strong>ÉTAPE 2 :</strong> Votre place est réservée <u>temporairement</u>.<br>
-                    <strong>ÉTAPE 3 :</strong> Apportez le règlement et les documents au club pour validation finale.
-                </div>
+                <p style="font-size: 0.8rem; background:#e7f3ff; padding:10px; border-radius:5px;">
+                    <strong>Note :</strong> Remplissez ce formulaire pour réserver une place temporaire.
+                </p>
                 
                 <div class="form-grid">
                     <div>
                         <label>Nom de l'enfant</label>
-                        <input type="text" id="nom" placeholder="NOM" required>
+                        <input type="text" id="nom" required>
                     </div>
                     <div>
                         <label>Prénom de l'enfant</label>
-                        <input type="text" id="prenom" placeholder="Prénom" required>
+                        <input type="text" id="prenom" required>
                     </div>
                     <div>
                         <label>Date de naissance</label>
                         <input type="date" id="date_naiss" required>
                     </div>
                     <div>
-                        <label>Niveau de ski actuel</label>
+                        <label>Niveau de ski</label>
                         <select id="niveau">
-                            <option value="Débutant">Débutant (Jamais skié)</option>
+                            <option value="Débutant">Débutant</option>
                             <option value="Ourson">Ourson</option>
                             <option value="Flocon">Flocon</option>
                             <option value="1ere Etoile">1ère Étoile</option>
-                            <option value="2e Etoile">2ème Étoile</option>
-                            <option value="3e Etoile">3ème Étoile</option>
-                            <option value="Bronze">Bronze</option>
-                            <option value="Argent">Argent</option>
-                            <option value="Or">Or</option>
                             <option value="Expert">Expert</option>
                         </select>
                     </div>
                     <div>
-                        <label>Téléphone d'urgence (1)</label>
+                        <label>Téléphone d'urgence</label>
                         <input type="tel" id="tel" placeholder="06..." required>
                     </div>
                     <div>
-                        <label>Email de contact</label>
-                        <input type="email" id="email" placeholder="votre@email.com" required>
-                    </div>
-                    <div style="grid-column: 1/-1;">
-                        <label>Besoin du transport en bus ?</label>
-                        <select id="transport">
-                            <option value="oui">Oui, je souhaite utiliser le bus du club</option>
-                            <option value="non">Non, je l'amène directement en station</option>
-                        </select>
+                        <label>Email</label>
+                        <input type="email" id="email" required>
                     </div>
                 </div>
 
-                <div style="margin-top:20px; background: #fafafa; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
-                    <label style="display:flex; gap:10px; cursor:pointer; align-items: flex-start;">
-                        <input type="checkbox" required style="width:auto; margin-top:5px;">
-                        <span style="font-size: 0.8rem;">Je m'engage à fournir le certificat médical et les autres documents le jour de l'inscription réelle.</span>
-                    </label>
-                </div>
+                <label style="display:flex; gap:10px; margin-top:15px;">
+                    <input type="checkbox" required style="width:auto;">
+                    <span style="font-size: 0.75rem;">Je m'engage à fournir les documents originaux.</span>
+                </label>
 
-                <button type="submit" class="btn btn-red" style="margin-top:20px; font-size: 1.1rem;">
-                    <i class="fas fa-paper-plane"></i> Envoyer ma Pré-Inscription
+                <button type="submit" class="btn btn-red" style="margin-top:20px;">
+                    <i class="fas fa-paper-plane"></i> Envoyer
                 </button>
             </form>
         </div>
     </section>
 
-    <section id="aide" style="background: #f0f0f0;">
-        <h2><i class="fas fa-question-circle"></i> Besoin d'aide ?</h2>
+    <section id="aide">
+        <h2>Besoin d'aide ?</h2>
         <div class="grid">
-            <div class="card">
-                <i class="fas fa-envelope" style="font-size: 2rem; color: var(--blue);"></i>
-                <h3>Par Email</h3>
-                <p>Pour toute question administrative ou technique.</p>
-                <a href="mailto:contact@skiclub-stalban.fr" class="btn btn-blue" style="padding: 10px;">contact@skiclub-stalban.fr</a>
-            </div>
-            <div class="card">
-                <i class="fas fa-phone-alt" style="font-size: 2rem; color: var(--red);"></i>
-                <h3>Par Téléphone</h3>
-                <p>Urgence ou renseignement rapide.</p>
-                <a href="tel:0479000000" class="btn btn-red" style="padding: 10px; background: var(--dark);">04 79 00 00 00</a>
+            <div class="card" style="text-align:center;">
+                <i class="fas fa-envelope" style="font-size: 1.5rem; color: var(--blue);"></i>
+                <p>contact@skiclub-stalban.fr</p>
+                <a href="mailto:contact@skiclub-stalban.fr" class="btn btn-blue">Écrire</a>
             </div>
         </div>
     </section>
 
     <footer>
-        <p><strong>Ski Club Saint-Alban Leysse</strong><br>Maison des Associations, 73230</p>
-        <span class="admin-trigger" onclick="login('Admin')">Accès Administration</span>
+        <p><strong>Ski Club Saint-Alban Leysse</strong><br>73230 Saint-Alban Leysse</p>
+        <span style="opacity:0.5; font-size:0.7rem; text-decoration:underline; cursor:pointer;" onclick="login('Admin')">Admin</span>
     </footer>
 
     <script>
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
         window.onload = function() {
             const settings = JSON.parse(localStorage.getItem('clubSettings')) || { regOpen: false, bourse: '' };
-            
             const alerteContainer = document.getElementById('annuaire-alerte');
-            const msgInsc = document.getElementById('msg-inscription');
-            const msgBourseBanner = document.getElementById('msg-bourse-banner');
-            let hasAlert = false;
-
-            // Inscriptions
+            
             if (settings.regOpen === true || settings.regOpen === "true") {
-                msgInsc.style.display = 'block';
-                hasAlert = true;
+                document.getElementById('msg-inscription').style.display = 'block';
                 document.getElementById('lock-msg').style.display = 'none';
+                alerteContainer.style.display = 'block';
             } else {
                 document.getElementById('lock-msg').style.display = 'flex';
             }
 
-            // Bourse
             if (settings.bourse && settings.bourse.trim() !== "") {
                 document.getElementById('date-bourse-banner-display').innerText = settings.bourse;
                 document.getElementById('bourse-date-display').innerText = settings.bourse;
                 document.getElementById('bourse-section').style.display = 'block';
-                msgBourseBanner.style.display = 'block';
-                hasAlert = true;
+                document.getElementById('msg-bourse-banner').style.display = 'block';
+                alerteContainer.style.display = 'block';
             }
-
-            if (hasAlert) alerteContainer.style.display = 'block';
         };
 
         function login(role) {
-            const code = prompt("Entrez le code " + role + " :");
-            const codeAttendu = (role === 'Admin') ? 'ski73' : 'benevole73';
-            if (code === codeAttendu) {
+            const code = prompt("Code " + role + " :");
+            if (code === 'ski73') {
                 localStorage.setItem('userRole', role);
                 window.location.href = 'admin.html';
-            } else if (code !== null) {
-                alert("❌ Code incorrect.");
             }
         }
 
         document.getElementById('saison-form').onsubmit = function(e) {
             e.preventDefault();
-            let list = JSON.parse(localStorage.getItem('skiFullList')) || [];
-            list.push({
-                nom: document.getElementById('nom').value.toUpperCase(),
-                prenom: document.getElementById('prenom').value,
-                naissance: document.getElementById('date_naiss').value,
-                tel: document.getElementById('tel').value,
-                email: document.getElementById('email').value,
-                niveau: document.getElementById('niveau').value,
-                transport: document.getElementById('transport').value,
-                date: new Date().toLocaleString('fr-FR')
-            });
-            localStorage.setItem('skiFullList', JSON.stringify(list));
             alert("✅ Pré-inscription enregistrée !");
             this.reset();
         };
