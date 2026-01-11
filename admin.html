@@ -8,28 +8,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --blue: #009ee0; --red: #e30613; --dark: #1a1a1a; --gray: #f4f7f9; --green: #2ecc71; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--gray); margin: 0; padding: 20px; color: var(--dark); }
-        .container { max-width: 800px; margin: 0 auto; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--gray); margin: 0; padding: 15px; color: var(--dark); }
+        .container { max-width: 600px; margin: 0 auto; }
         
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        #badge { font-weight: 900; padding: 8px 12px; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; }
+        #badge { font-weight: 900; padding: 8px 12px; border-radius: 8px; font-size: 0.7rem; text-transform: uppercase; }
         .badge-admin { border: 1px solid var(--red); color: var(--red); background: #ffebee; }
         .badge-benevole { border: 1px solid var(--blue); color: var(--blue); background: #e3f2fd; }
 
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 6px solid var(--blue); }
-        h2 { margin-top: 0; font-weight: 900; text-transform: uppercase; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 6px solid var(--blue); }
+        h2 { margin-top: 0; font-weight: 900; text-transform: uppercase; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
 
         .admin-only { display: none; }
-
-        .counter-circle { width: 80px; height: 80px; border: 6px solid var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 10px auto; font-size: 1.8rem; font-weight: 900; }
+        .counter-circle { width: 70px; height: 70px; border: 5px solid var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 10px auto; font-size: 1.5rem; font-weight: 900; }
         
         .btn { border: none; padding: 14px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; transition: 0.2s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-green { background: var(--green); color: white; font-size: 1.1rem; }
+        .btn-green { background: var(--green); color: white; }
         .btn-blue { background: var(--blue); color: white; }
         
-        label { display: block; margin-top: 15px; font-weight: 700; font-size: 0.85rem; color: #666; }
-        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-family: inherit; margin-top: 5px; }
-        #preview-img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 12px; margin-top: 10px; display: none; border: 2px solid var(--blue); }
+        label { display: block; margin-top: 15px; font-weight: 700; font-size: 0.75rem; color: #666; }
+        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-family: inherit; margin-top: 5px; font-size: 16px; }
+        
+        .album-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 8px; margin-bottom: 5px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -37,52 +37,48 @@
 <div class="container">
     <div class="header">
         <span><i class="fas fa-user-circle"></i> <span id="badge">Chargement...</span></span>
-        <button onclick="logout()" style="border:none; background:none; color:var(--red); font-weight:bold; cursor:pointer;">DÉCONNEXION</button>
+        <button onclick="logout()" style="border:none; background:none; color:var(--red); font-weight:bold; cursor:pointer;">SORTIR</button>
     </div>
 
     <div class="card admin-only">
         <h2><i class="fas fa-check-square"></i> Appel du jour</h2>
         <div class="counter-circle" id="total-count">0</div>
-        
         <button class="btn btn-green" onclick="downloadAppelTxt()">
-            <i class="fas fa-file-download"></i> Télécharger la liste d'appel (.txt)
+            <i class="fas fa-file-download"></i> Télécharger la liste
         </button>
-
-        <button class="btn" onclick="resetAppel()" style="background:#eee; color:#888; font-size:0.7rem; margin-top:20px;">
-            Remettre à zéro pour samedi prochain
-        </button>
-    </div>
-
-    <div class="card admin-only" style="border-top-color: var(--dark);">
-        <h2><i class="fas fa-users"></i> Inscrits à l'année</h2>
-        <div id="pre-insc-list" style="max-height: 150px; overflow-y: auto; font-size: 0.85rem;"></div>
+        <button onclick="resetAppel()" style="display:block; margin: 15px auto 0; background:none; border:none; color:#bbb; font-size:0.6rem; text-decoration:underline;">Réinitialiser pour samedi</button>
     </div>
 
     <div class="card">
-        <h2><i class="fas fa-camera"></i> Photos & Résumés</h2>
-        <label>Sortie n° :</label>
-        <select id="sortie-id">
-            <option value="1">Sortie 1</option><option value="2">Sortie 2</option>
-            <option value="3">Sortie 3</option><option value="4">Sortie 4</option>
-            <option value="5">Sortie 5</option>
-        </select>
-        <label>Photo :</label>
-        <input type="file" id="photo-file" accept="image/*" onchange="previewImage(this)">
-        <img id="preview-img" src="">
-        <label>Résumé :</label>
-        <textarea id="app-text" rows="3" placeholder="Texte ici..."></textarea>
-        <button class="btn btn-blue" onclick="saveSortie()">Enregistrer</button>
+        <h2><i class="fab fa-google"></i> Albums Photos</h2>
+        
+        <label>Titre de l'album (ex: Sortie 1 - Le Revard)</label>
+        <input type="text" id="album-title" placeholder="Nom de la sortie">
+        
+        <label>Lien de partage Google Photos</label>
+        <input type="url" id="album-link" placeholder="https://photos.app.goo.gl/...">
+
+        <label>Lien d'une photo (couverture)</label>
+        <input type="url" id="album-cover" placeholder="Optionnel : lien d'une image">
+
+        <button class="btn btn-blue" onclick="addAlbum()">Ajouter l'album</button>
+
+        <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+        <h3>Albums en ligne :</h3>
+        <div id="album-list-admin"></div>
     </div>
 
     <div class="card admin-only" style="border-top-color: var(--red);">
-        <h2><i class="fas fa-cog"></i> Réglages</h2>
+        <h2><i class="fas fa-cog"></i> Réglages Site</h2>
         <label>Date Bourse aux Skis :</label>
-        <input type="text" id="bourse-in">
-        <label>Inscriptions ouvertes :</label>
+        <input type="text" id="bourse-in" placeholder="Ex: 15 Novembre 2026">
+        
+        <label>Inscriptions Ouvertes :</label>
         <select id="reg-in">
-            <option value="false">Fermé</option><option value="true">Ouvert</option>
+            <option value="false">Fermé</option>
+            <option value="true">Ouvert</option>
         </select>
-        <button class="btn btn-blue" style="background:var(--red)" onclick="saveSettings()">Mettre à jour</button>
+        <button class="btn" style="background:var(--dark); color:white" onclick="saveSettings()">Appliquer</button>
     </div>
 </div>
 
@@ -97,38 +93,67 @@
         if(role === 'Admin') {
             badge.className = 'badge-admin';
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-            loadData();
         } else {
             badge.className = 'badge-benevole';
         }
+        loadData();
     }
 
     function loadData() {
+        // Stats Appel
         const presences = JSON.parse(localStorage.getItem('skiPresences')) || [];
-        const dossiers = JSON.parse(localStorage.getItem('skiFullList')) || [];
-        const settings = JSON.parse(localStorage.getItem('clubSettings')) || {bourse:'', regOpen:false};
-
         document.getElementById('total-count').innerText = presences.length;
-        document.getElementById('bourse-in').value = settings.bourse;
+
+        // Réglages
+        const settings = JSON.parse(localStorage.getItem('clubSettings')) || {bourse:'', regOpen:false};
+        document.getElementById('bourse-in').value = settings.bourse || '';
         document.getElementById('reg-in').value = settings.regOpen.toString();
 
-        const preList = document.getElementById('pre-insc-list');
-        preList.innerHTML = dossiers.map(d => `<div>• ${d.nom} ${d.prenom}</div>`).join('') || "Aucun dossier.";
+        // Liste des albums
+        const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+        const listDiv = document.getElementById('album-list-admin');
+        listDiv.innerHTML = albums.map((a, index) => `
+            <div class="album-item">
+                <span><b>${a.title}</b></span>
+                <button onclick="deleteAlbum(${index})" style="color:var(--red); border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
+            </div>
+        `).join('') || "<p style='font-size:0.7rem; color:#999;'>Aucun album.</p>";
     }
 
-    // FONCTION TÉLÉCHARGEMENT FORMAT DEMANDÉ
+    function addAlbum() {
+        const title = document.getElementById('album-title').value;
+        const link = document.getElementById('album-link').value;
+        const cover = document.getElementById('album-cover').value;
+
+        if(!title || !link) return alert("Le titre et le lien sont obligatoires !");
+
+        let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+        albums.push({ title, link, cover });
+        localStorage.setItem('skiGallery', JSON.stringify(albums));
+        
+        // Reset champs
+        document.getElementById('album-title').value = '';
+        document.getElementById('album-link').value = '';
+        document.getElementById('album-cover').value = '';
+        
+        alert("Album ajouté !");
+        loadData();
+    }
+
+    function deleteAlbum(index) {
+        if(confirm("Supprimer cet album ?")) {
+            let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+            albums.splice(index, 1);
+            localStorage.setItem('skiGallery', JSON.stringify(albums));
+            loadData();
+        }
+    }
+
     function downloadAppelTxt() {
         const presences = JSON.parse(localStorage.getItem('skiPresences')) || [];
-        if (presences.length === 0) { return alert("Liste vide !"); }
-
-        let txt = "APPEL SKI CLUB\n\n";
-        presences.forEach(p => {
-            // On s'assure que le nom est en majuscule
-            let nomMaj = p.nom.toUpperCase();
-            let tel = p.telephone || "Pas de numéro";
-            txt += `[ ] ${nomMaj} - ${tel}\n`;
-        });
-
+        if (presences.length === 0) return alert("Liste vide !");
+        let txt = "LISTE D'APPEL - " + new Date().toLocaleDateString() + "\n\n";
+        presences.forEach(p => { txt += `[ ] ${p.nom.toUpperCase()} ${p.prenom} (${p.telephone})\n`; });
         const blob = new Blob([txt], { type: 'text/plain' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -136,43 +161,14 @@
         a.click();
     }
 
-    function previewImage(input) {
-        const preview = document.getElementById('preview-img');
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function saveSortie() {
-        const id = document.getElementById('sortie-id').value;
-        const text = document.getElementById('app-text').value;
-        const file = document.getElementById('photo-file').files[0];
-        let apps = JSON.parse(localStorage.getItem('skiAppreciations')) || {};
-        apps[id] = text;
-        localStorage.setItem('skiAppreciations', JSON.stringify(apps));
-
-        if(file) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                let photos = JSON.parse(localStorage.getItem('skiPhotosData')) || {};
-                photos[id] = e.target.result;
-                localStorage.setItem('skiPhotosData', JSON.stringify(photos));
-                alert("Enregistré !");
-            };
-            reader.readAsDataURL(file);
-        } else { alert("Texte enregistré !"); }
-    }
-
     function saveSettings() {
-    const s = { 
-        bourse: document.getElementById('bourse-in').value, 
-        regOpen: document.getElementById('reg-in').value === "true" 
-    };
-    localStorage.setItem('clubSettings', JSON.stringify(s));
-    alert("Site mis à jour ! Le bandeau d'alerte est maintenant visible sur l'accueil.");
-}
+        const s = { 
+            bourse: document.getElementById('bourse-in').value, 
+            regOpen: document.getElementById('reg-in').value === "true" 
+        };
+        localStorage.setItem('clubSettings', JSON.stringify(s));
+        alert("Réglages enregistrés !");
+    }
 
     function resetAppel() {
         if(confirm("Vider la liste d'appel ?")) {

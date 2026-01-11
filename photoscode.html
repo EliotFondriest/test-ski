@@ -8,99 +8,102 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --blue: #009ee0; --red: #e30613; --dark: #1a1a1a; --gray: #f4f7f9; }
-        * { scroll-behavior: smooth; }
-        body { font-family: 'Montserrat', sans-serif; margin: 0; background: var(--gray); padding: 20px; }
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; background: var(--gray); padding: 15px; }
         
-        header { background: white; padding: 30px; border-radius: 15px; margin-bottom: 40px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        
-        .category-section { 
-            margin-bottom: 50px; 
-            scroll-margin-top: 50px; /* Espace pour ne pas coller en haut lors du saut */
-        }
-        .category-title { 
-            color: var(--dark); border-left: 6px solid var(--red); 
-            padding-left: 15px; margin-bottom: 25px; text-transform: uppercase;
-        }
-
-        .gallery-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;
-        }
-
-        .photo-card {
-            background: white; padding: 12px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; gap: 12px;
-        }
-        .photo-card img { width: 100%; height: 220px; object-fit: cover; border-radius: 6px; }
-
-        .btn-download {
-            background: var(--blue); color: white; text-decoration: none;
-            padding: 10px; border-radius: 5px; text-align: center; font-weight: bold; font-size: 0.8rem;
-        }
-        .btn-download:hover { background: var(--dark); }
+        header { background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h1 { font-size: 1.5rem; margin: 15px 0 0; }
 
         .btn-back {
-            display: inline-block; padding: 10px 20px; background: var(--red);
-            color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-bottom: 20px;
+            display: inline-flex; align-items: center; gap: 8px; padding: 10px 15px; 
+            background: var(--red); color: white; text-decoration: none; 
+            border-radius: 8px; font-weight: bold; font-size: 0.8rem;
+        }
+
+        /* Liste des Albums */
+        .album-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
+        }
+
+        .album-card {
+            background: white; border-radius: 15px; overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.3s;
+            border-top: 5px solid var(--blue);
+        }
+        .album-card:active { transform: scale(0.98); }
+
+        .album-cover {
+            width: 100%; height: 180px; background: #ddd;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
+        }
+        .album-cover img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .album-info { padding: 15px; }
+        .album-info h3 { margin: 0 0 10px; font-size: 1.1rem; color: var(--dark); }
+        
+        .btn-view {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            background: #4285F4; /* Bleu Google */
+            color: white; text-decoration: none; padding: 12px;
+            border-radius: 8px; font-weight: 900; font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .album-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="calendrier.html" class="btn-back"><i class="fas fa-arrow-left"></i> Retour au Calendrier</a>
+        <a href="calendrier.html" class="btn-back"><i class="fas fa-arrow-left"></i> Retour</a>
         <h1>Albums Souvenirs</h1>
+        <p style="font-size: 0.8rem; color: #666;">Cliquez sur un album pour voir toutes les photos</p>
     </header>
 
-    <div id="main-gallery">
+    <div class="album-grid" id="album-container">
         </div>
 
     <script>
         window.onload = function() {
-            const container = document.getElementById('main-gallery');
-            const photos = JSON.parse(localStorage.getItem('skiGallery')) || [];
+            const container = document.getElementById('album-container');
+            
+            // On récupère les réglages de l'admin (qui doit maintenant contenir les LIENS Google Photos)
+            // Format attendu dans localStorage 'skiGallery' : 
+            // [{ title: "Sortie Le Revard", link: "https://photos.app.goo/...", cover: "URL_IMAGE" }]
+            const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
 
-            if (photos.length === 0) {
-                container.innerHTML = '<p style="text-align:center;">Aucune photo n\'a été publiée pour le moment.</p>';
+            if (albums.length === 0) {
+                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Aucun album disponible pour le moment.</p>';
                 return;
             }
 
-            // Regroupement par catégorie
-            const groups = {};
-            photos.forEach(p => {
-                const cat = p.cat || "Non classé";
-                if (!groups[cat]) groups[cat] = [];
-                groups[cat].push(p.name || p);
-            });
-
-            // Affichage
-            for (const [title, items] of Object.entries(groups)) {
-                // L'ID est important pour le lien depuis le calendrier
-                let sectionHtml = `
-                    <div class="category-section" id="${title}">
-                        <h2 class="category-title">${title}</h2>
-                        <div class="gallery-grid">
-                `;
-
-                items.forEach(imgName => {
-                    sectionHtml += `
-                        <div class="photo-card">
-                            <img src="photos/${imgName}" onerror="this.src='https://via.placeholder.com/300?text=Photo'">
-                            <a href="photos/${imgName}" download="${imgName}" class="btn-download">
-                                <i class="fas fa-download"></i> TÉLÉCHARGER
+            albums.forEach(album => {
+                const card = `
+                    <div class="album-card" id="${album.title}">
+                        <div class="album-cover">
+                            <img src="${album.cover || 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=500'}" alt="Couverture">
+                        </div>
+                        <div class="album-info">
+                            <h3>${album.title}</h3>
+                            <a href="${album.link}" target="_blank" class="btn-view">
+                                <i class="fab fa-google"></i> Voir sur Google Photos
                             </a>
                         </div>
-                    `;
-                });
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
 
-                sectionHtml += `</div></div>`;
-                container.innerHTML += sectionHtml;
-            }
-
-            // Petit délai pour laisser le temps au navigateur de sauter à l'ID si présent dans l'URL
+            // Gestion du scroll auto vers un album précis
             if(window.location.hash) {
-                const hash = decodeURIComponent(window.location.hash);
-                const target = document.querySelector(hash);
-                if(target) target.scrollIntoView();
+                setTimeout(() => {
+                    const hash = decodeURIComponent(window.location.hash);
+                    const target = document.querySelector(hash);
+                    if(target) target.scrollIntoView();
+                }, 500);
             }
         };
     </script>
