@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Présence Samedi - Ski Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --blue: #009ee0; --gray: #f4f7f9; --dark: #1a1a1a; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--gray); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; border-top: 8px solid var(--blue); }
+        
+        h1 { color: var(--dark); font-weight: 900; font-size: 1.4rem; margin-bottom: 5px; text-transform: uppercase; }
+        .date-display { color: var(--blue); font-weight: 700; font-size: 1.1rem; margin-bottom: 25px; display: block; }
+        
+        label { display: block; text-align: left; font-weight: 700; margin-top: 15px; font-size: 0.85rem; color: #666; }
+        input { width: 100%; padding: 14px; margin-top: 5px; border: 2px solid #eee; border-radius: 12px; box-sizing: border-box; font-size: 1rem; font-family: inherit; }
+        input:focus { border-color: var(--blue); outline: none; }
+        
+        .btn { background: var(--blue); color: white; border: none; padding: 18px; width: 100%; border-radius: 12px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 25px; transition: 0.3s; font-family: inherit; }
+        .btn:hover { background: #007bb0; transform: translateY(-2px); }
+        
+        #ok-msg { display: none; color: #2ecc71; font-weight: 900; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Je serai présent le :</h1>
+    <span id="prochain-samedi" class="date-display">Chargement de la date...</span>
+
+    <form id="presenceForm">
+        <label>NOM ET PRÉNOM DE L'ENFANT :</label>
+        <input type="text" id="nom" placeholder="Ex: FONDRIEST ELIOT" required>
+
+        <label>NUMÉRO DE TÉLÉPHONE :</label>
+        <input type="tel" id="tel" placeholder="06 00 00 00 00" required>
+
+        <button type="submit" class="btn">Valider ma présence</button>
+    </form>
+
+    <div id="ok-msg">
+        <i class="fas fa-check-circle"></i> ✅ C'est enregistré !<br>
+        <small style="font-weight:400; color:#888;">À samedi sur les pistes !</small>
+    </div>
+</div>
+
+<script>
+    // FONCTION POUR CALCULER LA DATE DU SAMEDI PROCHAIN
+    function afficherProchainSamedi() {
+        const maintenant = new Date();
+        const jourActuel = maintenant.getDay(); // 0 = Dimanche, 6 = Samedi
+        
+        // Calcul du nombre de jours jusqu'au prochain samedi
+        // Si on est samedi (6), on affiche le samedi suivant (+7 jours)
+        let joursAjouter = 6 - jourActuel;
+        if (joursAjouter <= 0) joursAjouter += 7;
+
+        const dateSamedi = new Date(maintenant);
+        dateSamedi.setDate(maintenant.getDate() + joursAjouter);
+
+        // Formatage en français
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        const dateFormatee = dateSamedi.toLocaleDateString('fr-FR', options);
+        
+        document.getElementById('prochain-samedi').innerText = dateFormatee;
+    }
+
+    // GESTION DE L'ENVOI
+    document.getElementById('presenceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const nom = document.getElementById('nom').value.toUpperCase();
+        const telephone = document.getElementById('tel').value;
+        const dateSamedi = document.getElementById('prochain-samedi').innerText;
+
+        let presences = JSON.parse(localStorage.getItem('skiPresences')) || [];
+        
+        // On enregistre le nom, le tel et la date exacte du samedi concerné
+        presences.push({ 
+            nom: nom, 
+            telephone: telephone,
+            dateSamedi: dateSamedi 
+        });
+        
+        localStorage.setItem('skiPresences', JSON.stringify(presences));
+
+        // Animation de succès
+        document.getElementById('presenceForm').style.display = 'none';
+        document.getElementById('ok-msg').style.display = 'block';
+
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 2500);
+    });
+
+    window.onload = afficherProchainSamedi;
+</script>
+
+</body>
+</html>
