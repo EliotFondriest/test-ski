@@ -10,11 +10,9 @@
         :root { --blue: #009ee0; --red: #e30613; --dark: #1a1a1a; --gray: #f4f7f9; }
         body { font-family: 'Montserrat', sans-serif; margin: 0; background: var(--gray); padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; }
-        
         header { background: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         h1 { color: var(--blue); text-transform: uppercase; margin: 0; font-weight: 900; }
         .subtitle { color: #666; margin-top: 10px; font-weight: bold; }
-
         .event-card {
             background: white; margin-bottom: 15px; padding: 20px; border-radius: 12px;
             display: flex; gap: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
@@ -22,50 +20,39 @@
         }
         .event-card.karellis { border-left-color: var(--red); }
         .event-card.past { border-left-color: #666; opacity: 0.9; }
-
         .date-box {
             background: var(--blue); color: white; padding: 10px; border-radius: 8px;
             min-width: 85px; text-align: center; font-weight: bold; line-height: 1.2;
         }
         .karellis .date-box { background: var(--red); }
         .past .date-box { background: #666; }
-
         .content { flex: 1; }
         .location { font-weight: 900; font-size: 0.9rem; text-transform: uppercase; display: block; margin-bottom: 5px; color: #444; }
         .content h3 { margin: 0; color: var(--dark); font-size: 1.2rem; }
-        
         .appreciation-text { 
             font-style: italic; color: #555; font-size: 0.9rem; margin-top: 8px; 
             padding: 8px; background: #f0f0f0; border-radius: 5px; display: none; 
         }
-
         .status-badge { 
             display: inline-block; padding: 4px 10px; border-radius: 20px; 
             font-size: 0.7rem; font-weight: bold; margin-top: 8px; 
             background: #d4edda; color: #155724; 
         }
         .past .status-badge { background: #eee; color: #666; }
-
         .btn-photos {
             display: inline-flex; align-items: center; gap: 8px; padding: 10px 15px;
-            background: var(--dark); color: white; text-decoration: none;
+            background: #ccc; color: white; text-decoration: none;
             border-radius: 6px; font-weight: bold; font-size: 0.85rem; transition: 0.3s;
         }
-        .btn-photos:hover { background: var(--blue); transform: scale(1.05); }
-
-        .btn-back {
-            display: inline-block; padding: 10px 20px; background: var(--dark);
-            color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-bottom: 20px;
-        }
-
+        .btn-active { background: var(--blue) !important; cursor: pointer; }
+        .btn-active:hover { background: var(--dark) !important; transform: scale(1.05); }
+        .btn-back { display: inline-block; padding: 10px 20px; background: var(--dark); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-bottom: 20px; }
         .pause-divider { text-align: center; padding: 20px; font-weight: bold; color: var(--red); text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
-
     <div class="container">
         <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Retour au site</a>
-
         <header>
             <h1>Saison 2026</h1>
             <p class="subtitle">10 Sorties • St François Longchamp & Les Karellis</p>
@@ -80,149 +67,55 @@
                     <div class="status-badge">À VENIR</div>
                     <div class="appreciation-text"></div>
                 </div>
-                <a href="photoscode.html#Sortie%20%231" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
+                <a href="#" class="btn-photos" id="btn-1"><i class="fas fa-camera"></i> Photos</a>
             </div>
-
-            <div class="event-card" data-sortie="2">
-                <div class="date-box">17<br>JANV</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> St François Longchamp</span>
-                    <h3>Sortie #2</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%232" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
-
-            <div class="event-card" data-sortie="3">
-                <div class="date-box">24<br>JANV</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> St François Longchamp</span>
-                    <h3>Sortie #3</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%233" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
-
-            <div class="event-card" data-sortie="4">
-                <div class="date-box">31<br>JANV</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> St François Longchamp</span>
-                    <h3>Sortie #4</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%234" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
-
-            <div class="event-card" data-sortie="5">
-                <div class="date-box">07<br>FÉVR</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> St François Longchamp</span>
-                    <h3>Sortie #5</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%235" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
+            <div class="event-card" data-sortie="2"><div class="date-box">17<br>JANV</div><div class="content"><span class="location">St François</span><h3>Sortie #2</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-2"><i class="fas fa-camera"></i> Photos</a></div>
+            <div class="event-card" data-sortie="3"><div class="date-box">24<br>JANV</div><div class="content"><span class="location">St François</span><h3>Sortie #3</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-3"><i class="fas fa-camera"></i> Photos</a></div>
+            <div class="event-card" data-sortie="4"><div class="date-box">31<br>JANV</div><div class="content"><span class="location">St François</span><h3>Sortie #4</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-4"><i class="fas fa-camera"></i> Photos</a></div>
+            <div class="event-card" data-sortie="5"><div class="date-box">07<br>FÉVR</div><div class="content"><span class="location">St François</span><h3>Sortie #5</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-5"><i class="fas fa-camera"></i> Photos</a></div>
 
             <div class="pause-divider">--- Pause Vacances ---</div>
 
-            <div class="event-card karellis" data-sortie="6">
-                <div class="date-box">28<br>FÉVR</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> Les Karellis</span>
-                    <h3>Sortie #6</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%236" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
-
-            <div class="event-card karellis" data-sortie="7">
-                <div class="date-box">07<br>MARS</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> Les Karellis</span>
-                    <h3>Sortie #7</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%237" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
-
-            <div class="event-card karellis" data-sortie="8">
-                <div class="date-box">14<br>MARS</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> Les Karellis</span>
-                    <h3>Sortie #8</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%238" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
-
-            <div class="event-card karellis" data-sortie="9">
-                <div class="date-box">21<br>MARS</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> Les Karellis</span>
-                    <h3>Sortie #9</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%239" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
-
-            <div class="event-card karellis" data-sortie="10">
-                <div class="date-box">28<br>MARS</div>
-                <div class="content">
-                    <span class="location"><i class="fas fa-map-marker-alt"></i> Les Karellis</span>
-                    <h3>Sortie #10 (Tests ESF)</h3>
-                    <div class="status-badge">À VENIR</div>
-                    <div class="appreciation-text"></div>
-                </div>
-                <a href="photoscode.html#Sortie%20%2310" class="btn-photos"><i class="fas fa-camera"></i> Photos</a>
-            </div>
+            <div class="event-card karellis" data-sortie="6"><div class="date-box">28<br>FÉVR</div><div class="content"><span class="location">Les Karellis</span><h3>Sortie #6</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-6"><i class="fas fa-camera"></i> Photos</a></div>
+            <div class="event-card karellis" data-sortie="7"><div class="date-box">07<br>MARS</div><div class="content"><span class="location">Les Karellis</span><h3>Sortie #7</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-7"><i class="fas fa-camera"></i> Photos</a></div>
+            <div class="event-card karellis" data-sortie="8"><div class="date-box">14<br>MARS</div><div class="content"><span class="location">Les Karellis</span><h3>Sortie #8</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-8"><i class="fas fa-camera"></i> Photos</a></div>
+            <div class="event-card karellis" data-sortie="9"><div class="date-box">21<br>MARS</div><div class="content"><span class="location">Les Karellis</span><h3>Sortie #9</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-9"><i class="fas fa-camera"></i> Photos</a></div>
+            <div class="event-card karellis" data-sortie="10"><div class="date-box">28<br>MARS</div><div class="content"><span class="location">Les Karellis</span><h3>Sortie #10</h3><div class="status-badge">À VENIR</div><div class="appreciation-text"></div></div><a href="#" class="btn-photos" id="btn-10"><i class="fas fa-camera"></i> Photos</a></div>
         </div>
     </div>
 
-    // REMPLACEZ VOTRE BLOC <script> DANS LE CALENDRIER PAR CELUI-CI
-<script>
-window.onload = function() {
-    const appreciations = JSON.parse(localStorage.getItem('skiAppreciations')) || {};
-    const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+    <script>
+    window.onload = function() {
+        const appreciations = JSON.parse(localStorage.getItem('skiAppreciations')) || {};
+        const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
 
-    document.querySelectorAll('.event-card').forEach(card => {
-        const id = card.getAttribute('data-sortie');
-        const textDiv = card.querySelector('.appreciation-text');
-        const badge = card.querySelector('.status-badge');
-        const btnPhotos = card.querySelector('.btn-photos');
+        document.querySelectorAll('.event-card').forEach(card => {
+            const id = card.getAttribute('data-sortie');
+            const textDiv = card.querySelector('.appreciation-text');
+            const badge = card.querySelector('.status-badge');
+            const btnPhotos = card.querySelector('.btn-photos');
 
-        // 1. Gestion des textes de résumé
-        if (appreciations[id]) {
-            textDiv.innerText = "“ " + appreciations[id] + " ”";
-            textDiv.style.display = "block";
-            badge.innerText = "PASSÉE";
-            card.classList.add('past');
-        }
+            // 1. Textes de résumé
+            if (appreciations[id]) {
+                textDiv.innerText = "“ " + appreciations[id] + " ”";
+                textDiv.style.display = "block";
+                badge.innerText = "PASSÉE";
+                card.classList.add('past');
+            }
 
-        // 2. Gestion automatique du lien photo
-        // On cherche un album qui contient "Sortie #X" dans son titre
-        const albumTrouve = albums.find(a => a.title.includes("Sortie #" + id));
+            // 2. Photos (recherche par titre "Sortie #1", "Sortie #2", etc.)
+            const albumTrouve = albums.find(a => a.title.includes("Sortie #" + id));
 
-        if (albumTrouve) {
-            // Si trouvé, on redirige vers notre page de lecture avec l'ID
-            btnPhotos.href = "photoscode.html?sortie=" + id;
-            btnPhotos.style.background = "#009ee0";
-            btnPhotos.innerHTML = '<i class="fas fa-camera"></i> Voir les photos';
-        } else {
-            // Si pas d'album, on désactive le bouton
-            btnPhotos.style.opacity = "0.3";
-            btnPhotos.style.pointerEvents = "none";
-            btnPhotos.innerText = "Bientôt";
-        }
-    });
-};
-</script>
+            if (albumTrouve) {
+                btnPhotos.classList.add('btn-active');
+                btnPhotos.href = "photoscode.html?sortie=" + id;
+                btnPhotos.innerHTML = '<i class="fas fa-camera"></i> Voir les photos';
+            } else {
+                btnPhotos.style.pointerEvents = "none";
+                btnPhotos.innerText = "Bientôt";
+            }
+        });
+    };
+    </script>
 </body>
 </html>

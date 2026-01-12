@@ -2,34 +2,88 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Galerie - Ski Club</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photos | Ski Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/publicalbum@latest/embed-ui.min.js" async></script>
+
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; overflow: hidden; }
-        .nav { background: #1a1a1a; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
-        .back-btn { color: white; text-decoration: none; font-weight: bold; }
-        iframe { width: 100%; height: calc(100vh - 50px); border: none; }
+        :root { --blue: #009ee0; --dark: #1a1a1a; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; background: #f4f7f9; }
+        
+        /* Barre de navigation */
+        .nav { background: white; padding: 15px 20px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .back-btn { color: var(--dark); text-decoration: none; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+        h1 { flex: 1; text-align: center; font-size: 1.1rem; margin: 0; color: var(--blue); text-transform: uppercase; }
+        
+        /* Conteneur principal */
+        .content { padding: 20px; max-width: 1100px; margin: 0 auto; }
+        
+        /* Le fond blanc pour les photos */
+        #gallery-container { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            min-height: 600px; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .loading-text { text-align: center; padding: 50px; color: #888; font-weight: bold; }
     </style>
 </head>
 <body>
+
     <div class="nav">
-        <a href="calendrier.html" class="back-btn">← Retour au calendrier</a>
-        <span id="album-title">Chargement...</span>
+        <a href="calendrier.html" class="back-btn"><i class="fas fa-arrow-left"></i> RETOUR</a>
+        <h1 id="album-name">Album Photos</h1>
+        <div style="width:80px"></div> 
     </div>
-    <div id="viewer"></div>
+
+    <div class="content">
+        <div id="gallery-container">
+            <div id="status-message" class="loading-text">
+                <i class="fas fa-spinner fa-spin"></i> Chargement des photos...
+            </div>
+        </div>
+    </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const sortieId = urlParams.get('sortie');
-        const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+        window.onload = function() {
+            // 1. On récupère l'info de la sortie (ex: Sortie #1)
+            const hashValue = decodeURIComponent(window.location.hash.substring(1));
+            const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
 
-        const album = albums.find(a => a.title.includes("Sortie #" + sortieId));
+            // 2. On cherche l'album correspondant dans ta base de données
+            const album = albums.find(a => a.title === hashValue || hashValue.includes(a.title) || a.title.includes(hashValue));
 
-        if(album) {
-            document.getElementById('album-title').innerText = album.title;
-            document.getElementById('viewer').innerHTML = `<iframe src="${album.link}" allowfullscreen></iframe>`;
-        } else {
-            document.body.innerHTML = "<h1>Album non trouvé</h1><a href='calendrier.html'>Retour</a>";
-        }
+            const container = document.getElementById('gallery-container');
+
+            if (album) {
+                document.getElementById('album-name').innerText = album.title;
+                
+                // 3. On injecte le widget proprement dans le fond blanc
+                container.innerHTML = `
+                    <div class="pa-gallery-player-widget" 
+                         style="width:100%; height:700px; display:none;"
+                         data-link="${album.link}"
+                         data-title="${album.title}"
+                         data-description="Ski Club 2026">
+                         <object data="${album.link}"></object>
+                    </div>
+                `;
+
+                // 4. On demande au script PublicAlbum de transformer le lien en photos
+                if (window.pa && window.pa.embed) {
+                    window.pa.embed.init();
+                }
+            } else {
+                container.innerHTML = `<div class="loading-text">Aucun album trouvé pour "${hashValue}".<br>Vérifie l'Admin.</div>`;
+            }
+        };
     </script>
 </body>
 </html>
