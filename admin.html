@@ -58,40 +58,36 @@
     }
 
     function addAlbum() {
-        const title = document.getElementById('album-title').value.trim();
-        const linksText = document.getElementById('album-links').value.trim();
+    const title = document.getElementById('album-title').value.trim();
+    const linksText = document.getElementById('album-links').value.trim();
 
-        if(!title || !linksText) {
-            alert("Veuillez remplir le titre et ajouter des liens.");
-            return;
-        }
-
-        // On transforme le texte du textarea en tableau (Array)
-        const photosArray = linksText.split('\n')
-                                     .map(line => line.trim())
-                                     .filter(line => line.length > 0);
-
-        let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
-        
-        const existingIndex = albums.findIndex(a => a.title === title);
-        
-        if (existingIndex > -1) {
-            // Mise à jour de l'album existant
-            albums[existingIndex] = { title: title, photos: photosArray };
-            alert("Album '" + title + "' mis à jour !");
-        } else {
-            // Nouvel album
-            albums.push({ title: title, photos: photosArray });
-            alert("Album ajouté avec succès !");
-        }
-        
-        localStorage.setItem('skiGallery', JSON.stringify(albums));
-        
-        // Nettoyage des champs
-        document.getElementById('album-title').value = '';
-        document.getElementById('album-links').value = '';
-        loadAlbums();
+    if(!title || !linksText) {
+        alert("Veuillez remplir le titre et ajouter des liens.");
+        return;
     }
+
+    const newPhotos = linksText.split('\n')
+                               .map(line => line.trim())
+                               .filter(line => line.length > 0);
+
+    let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+    const existingIndex = albums.findIndex(a => a.title === title);
+    
+    if (existingIndex > -1) {
+        // AU LIEU DE REMPLACER, ON AJOUTE (CONCAT)
+        // On utilise Set pour éviter les doublons si tu colles deux fois le même lien
+        const oldPhotos = albums[existingIndex].photos || [];
+        albums[existingIndex].photos = [...new Set([...oldPhotos, ...newPhotos])];
+        alert("Nouvelles photos ajoutées à l'album existant !");
+    } else {
+        albums.push({ title: title, photos: newPhotos });
+        alert("Album créé avec succès !");
+    }
+    
+    localStorage.setItem('skiGallery', JSON.stringify(albums));
+    document.getElementById('album-links').value = ''; // On vide juste les liens
+    loadAlbums();
+}
 
     function deleteAlbum(index) {
         if(confirm("Confirmer la suppression ?")) {
