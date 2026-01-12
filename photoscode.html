@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photos | Ski Club</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -17,58 +16,83 @@
         .back-btn { color: var(--dark); text-decoration: none; font-weight: 900; display: flex; align-items: center; gap: 10px; }
         h1 { flex: 1; text-align: center; font-size: 1.1rem; margin: 0; color: var(--blue); text-transform: uppercase; }
         .content { padding: 20px; max-width: 1100px; margin: 0 auto; }
-        #gallery-container { background: white; border-radius: 20px; min-height: 600px; padding: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        
+        /* Conteneur Fond Blanc */
+        #gallery-container { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            min-height: 650px; /* Important pour que ça ne soit pas tout petit */
+        }
+        .loading-text { text-align: center; padding: 50px; color: #888; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="nav">
         <a href="calendrier.html" class="back-btn"><i class="fas fa-arrow-left"></i> RETOUR</a>
-        <h1 id="album-name">Album Photos</h1>
+        <h1 id="album-name">Chargement...</h1>
         <div style="width:80px"></div> 
     </div>
 
     <div class="content">
         <div id="gallery-container">
             <div id="status-message" class="loading-text">
-                <i class="fas fa-spinner fa-spin"></i> Chargement des photos...
+                <i class="fas fa-spinner fa-spin"></i> Initialisation de l'album...
             </div>
         </div>
     </div>
 
     <script>
-        window.onload = function() {
-            // 1. On récupère l'info de la sortie (ex: Sortie #1)
-            const hashValue = decodeURIComponent(window.location.hash.substring(1));
+        function loadGallery() {
+            // 1. Récupérer le numéro de sortie depuis l'URL (?sortie=1)
+            const urlParams = new URLSearchParams(window.location.search);
+            const sortieId = urlParams.get('sortie');
+            
             const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
-
-            // 2. On cherche l'album correspondant dans ta base de données
-            const album = albums.find(a => a.title === hashValue || hashValue.includes(a.title) || a.title.includes(hashValue));
+            // On cherche l'album qui correspond au numéro (ex: "Sortie #1")
+            const album = albums.find(a => a.title.includes("#" + sortieId));
 
             const container = document.getElementById('gallery-container');
 
-            if (album) {
+            if (album && album.link) {
                 document.getElementById('album-name').innerText = album.title;
                 
-                // 3. On injecte le widget proprement dans le fond blanc
+                // 2. Nettoyer le lien (doit être un lien court https://photos.app.goo.gl/...)
+                const cleanLink = album.link.trim();
+
+                // 3. Injecter le code HTML spécifique attendu par le script
                 container.innerHTML = `
                     <div class="pa-gallery-player-widget" 
                          style="width:100%; height:700px; display:none;"
-                         data-link="${album.link}"
+                         data-link="${cleanLink}"
                          data-title="${album.title}"
-                         data-description="Ski Club 2026">
-                         <object data="${album.link}"></object>
+                         data-description="Saison 2026">
+                         <object data="${cleanLink}"></object>
                     </div>
                 `;
 
-                // 4. On demande au script PublicAlbum de transformer le lien en photos
-                if (window.pa && window.pa.embed) {
-                    window.pa.embed.init();
-                }
+                // 4. Forcer le script à scanner la page pour afficher les photos
+                const checkInterval = setInterval(() => {
+                    if (window.pa && window.pa.embed) {
+                        window.pa.embed.init();
+                        clearInterval(checkInterval);
+                    }
+                }, 500);
+
             } else {
-                container.innerHTML = `<div class="loading-text">Aucun album trouvé pour "${hashValue}".<br>Vérifie l'Admin.</div>`;
+                container.innerHTML = `
+                    <div class="loading-text">
+                        <i class="fas fa-exclamation-triangle"></i><br>
+                        Album non trouvé dans l'Admin.<br>
+                        Vérifiez que le titre contient bien "#${sortieId}"
+                    </div>`;
             }
-        };
+        }
+
+        // Lancer au chargement
+        window.addEventListener('load', loadGallery);
     </script>
 </body>
 </html>
