@@ -7,37 +7,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --blue: #009ee0; --red: #e30613; --dark: #1a1a1a; --gray: #f4f7f9; }
+        :root { --blue: #009ee0; --red: #e30613; --dark: #1a1a1a; --gray: #f4f7f9; --green: #2ecc71; }
         body { font-family: 'Montserrat', sans-serif; background: var(--gray); padding: 15px; color: var(--dark); }
         .container { max-width: 600px; margin: 0 auto; }
         .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border-top: 6px solid var(--blue); margin-bottom: 20px; }
         h2 { margin-top: 0; font-weight: 900; text-transform: uppercase; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
         label { display: block; margin-top: 15px; font-weight: 700; font-size: 0.8rem; color: #666; }
-        input, textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; margin-top: 5px; font-family: inherit; box-sizing: border-box; }
-        textarea { resize: vertical; min-height: 150px; font-size: 0.8rem; }
+        input, textarea, select { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; margin-top: 5px; font-family: inherit; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 100px; }
         .btn { border: none; padding: 15px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 20px; background: var(--blue); color: white; transition: 0.3s; }
         .btn:hover { background: var(--dark); }
-        .album-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f9f9f9; border-radius: 10px; margin-top: 10px; border: 1px solid #eee; }
+        .album-item { padding: 15px; background: #f9f9f9; border-radius: 10px; margin-top: 10px; border: 1px solid #eee; }
+        .header-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .delete-btn { color: var(--red); border: none; background: none; cursor: pointer; font-size: 1.1rem; }
-        .count-badge { background: var(--blue); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
+        .status-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; font-weight: 900; text-transform: uppercase; }
+        .status-future { background: #eee; color: #666; }
+        .status-past { background: var(--green); color: white; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="card">
-        <h2><i class="fas fa-cog"></i> Admin Photos</h2>
+        <h2><i class="fas fa-edit"></i> Mise à jour des Séances</h2>
         
-        <label>Titre de l'album (Ex: Sortie #1)</label>
-        <input type="text" id="album-title" placeholder="Sortie #X">
+        <label>Sélectionner la Sortie (Ex: Sortie #1)</label>
+        <input type="text" id="album-title" placeholder="Sortie #1">
         
+        <label>Appréciation / Résumé de la séance</label>
+        <textarea id="session-feedback" placeholder="Comment s'est passée la séance ? (Météo, neige, ambiance...)"></textarea>
+        <p style="font-size:0.7rem; color:#888;">Ajouter une appréciation passera automatiquement la séance en "Passée".</p>
+
         <label>Liens des photos (Un par ligne)</label>
         <textarea id="album-links" placeholder="Collez les liens directs ici..."></textarea>
-        <p style="font-size:0.7rem; color:#888;">Note : Les nouveaux liens seront ajoutés aux anciens.</p>
 
-        <button class="btn" onclick="addAlbum()">Enregistrer / Ajouter</button>
+        <button class="btn" onclick="addAlbum()">Mettre à jour la séance</button>
 
         <hr style="margin:25px 0; border:0; border-top:1px solid #eee;">
+        <h3>Liste des séances configurées :</h3>
         <div id="album-list"></div>
     </div>
 </div>
@@ -48,37 +55,56 @@
         const list = document.getElementById('album-list');
         list.innerHTML = albums.map((a, i) => `
             <div class="album-item">
-                <span><b>${a.title}</b> <span class="count-badge">${a.photos ? a.photos.length : 0} im.</span></span>
-                <button class="delete-btn" onclick="deleteAlbum(${i})"><i class="fas fa-trash"></i></button>
+                <div class="header-item">
+                    <span><b>${a.title}</b></span>
+                    <span class="status-badge ${a.feedback ? 'status-past' : 'status-future'}">
+                        ${a.feedback ? 'Passé' : 'À venir'}
+                    </span>
+                    <button class="delete-btn" onclick="deleteAlbum(${i})"><i class="fas fa-trash"></i></button>
+                </div>
+                <div style="font-size: 0.8rem; color: #555;">
+                    ${a.feedback ? '<b>Avis :</b> ' + a.feedback.substring(0, 40) + '...' : '<i>Aucun avis enregistré</i>'}
+                </div>
             </div>
-        `).join('') || "<p>Aucun album.</p>";
+        `).join('') || "<p>Aucune séance configurée.</p>";
     }
 
     function addAlbum() {
         const title = document.getElementById('album-title').value.trim();
+        const feedback = document.getElementById('session-feedback').value.trim();
         const linksText = document.getElementById('album-links').value.trim();
-        if(!title || !linksText) return alert("Remplissez tout !");
+
+        if(!title) return alert("Indiquez au moins le numéro de la sortie !");
 
         const newPhotos = linksText.split('\n').map(l => l.trim()).filter(l => l.length > 10);
         let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
         const idx = albums.findIndex(a => a.title === title);
 
         if (idx > -1) {
-            // Fusionne sans doublons
+            // Mise à jour : on garde les photos, on ajoute les nouvelles, on met l'avis
             albums[idx].photos = [...new Set([...(albums[idx].photos || []), ...newPhotos])];
-            alert("Photos ajoutées !");
+            albums[idx].feedback = feedback || albums[idx].feedback; // On met à jour l'avis s'il y en a un
+            alert("Séance mise à jour !");
         } else {
-            albums.push({ title, photos: newPhotos });
-            alert("Album créé !");
+            // Création
+            albums.push({ 
+                title: title, 
+                photos: newPhotos, 
+                feedback: feedback 
+            });
+            alert("Séance créée !");
         }
         
         localStorage.setItem('skiGallery', JSON.stringify(albums));
+        
+        // Reset des champs
         document.getElementById('album-links').value = '';
+        document.getElementById('session-feedback').value = '';
         loadAlbums();
     }
 
     function deleteAlbum(i) {
-        if(confirm("Supprimer ?")) {
+        if(confirm("Supprimer cette séance ?")) {
             let albums = JSON.parse(localStorage.getItem('skiGallery'));
             albums.splice(i, 1);
             localStorage.setItem('skiGallery', JSON.stringify(albums));
