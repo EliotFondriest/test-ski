@@ -6,70 +6,80 @@
     <title>Photos | Ski Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/npm/publicalbum@latest/embed-ui.min.js" async></script>
-
     <style>
         :root { --blue: #009ee0; --dark: #1a1a1a; }
-        body { font-family: 'Montserrat', sans-serif; margin: 0; background: #f4f7f9; }
-        .nav { background: white; padding: 15px 20px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .back-btn { color: var(--dark); text-decoration: none; font-weight: 900; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; background: #f4f7f9; height: 100vh; display: flex; flex-direction: column; }
+        
+        .nav { background: white; padding: 15px 20px; display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; }
+        .back-btn { color: var(--dark); text-decoration: none; font-weight: 900; display: flex; align-items: center; gap: 10px; }
         h1 { flex: 1; text-align: center; font-size: 1.1rem; margin: 0; color: var(--blue); text-transform: uppercase; }
-        .content { padding: 20px; max-width: 1000px; margin: 0 auto; }
-        #gallery-container { 
-            background: white; border-radius: 20px; padding: 15px; 
-            min-height: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        
+        .content { flex: 1; padding: 20px; display: flex; justify-content: center; }
+        
+        /* Le cadre blanc qui contient l'album */
+        #gallery-wrapper { 
+            background: white; 
+            width: 100%; 
+            max-width: 1100px; 
+            border-radius: 20px; 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
         }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .error-msg { text-align: center; padding: 50px; color: #666; }
     </style>
 </head>
 <body>
+
     <div class="nav">
         <a href="calendrier.html" class="back-btn"><i class="fas fa-arrow-left"></i> RETOUR</a>
-        <h1 id="album-name">Chargement...</h1>
+        <h1 id="album-name">Photos de la sortie</h1>
+        <div style="width:80px"></div> 
     </div>
 
     <div class="content">
-        <div id="gallery-container">
-            <div id="gallery-target">
-                <p style="text-align:center; padding-top:100px;">Connexion à Google Photos...</p>
+        <div id="gallery-wrapper">
+            <div id="display-area">
+                <p class="error-msg">Chargement de l'album Google Photos...</p>
             </div>
         </div>
     </div>
 
     <script>
-        window.addEventListener('load', function() {
+        window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const sortieId = urlParams.get('sortie');
+            
             const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+            // On cherche l'album qui contient le numéro de sortie dans son titre
             const album = albums.find(a => a.title.includes("#" + sortieId));
+
+            const displayArea = document.getElementById('display-area');
 
             if (album && album.link) {
                 document.getElementById('album-name').innerText = album.title;
                 
-                // INJECTION DU WIDGET
-                document.getElementById('gallery-target').innerHTML = `
-                    <div class="pa-gallery-player-widget" 
-                         style="width:100%; height:650px; display:none;"
-                         data-link="${album.link}"
-                         data-title="${album.title}">
-                         <object data="${album.link}"></object>
-                    </div>
-                `;
-
-                // FORCE LE SCRIPT PUBLIC ALBUM
-                let retry = 0;
-                const checkPa = setInterval(() => {
-                    if (window.pa && window.pa.embed) {
-                        window.pa.embed.init();
-                        clearInterval(checkPa);
-                    }
-                    if (retry > 10) clearInterval(checkPa);
-                    retry++;
-                }, 500);
+                // TECHNIQUE DE L'IFRAME DIRECTE
+                // On affiche directement le lien Google Photos dans le cadre blanc
+                displayArea.innerHTML = `
+                    <iframe 
+                        src="${album.link}" 
+                        allowfullscreen>
+                    </iframe>`;
+                
+                // On ajuste la taille du display-area pour qu'il remplisse le wrapper
+                displayArea.style.height = "100%";
             } else {
-                document.getElementById('gallery-target').innerHTML = "Album introuvable.";
+                displayArea.innerHTML = `<p class="error-msg">Aucun album trouvé pour la sortie #${sortieId}.<br>Vérifiez l'Admin.</p>`;
             }
-        });
+        };
     </script>
 </body>
 </html>
