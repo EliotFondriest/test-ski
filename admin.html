@@ -13,32 +13,34 @@
         .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border-top: 6px solid var(--blue); margin-bottom: 20px; }
         h2 { margin-top: 0; font-weight: 900; text-transform: uppercase; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
         label { display: block; margin-top: 15px; font-weight: 700; font-size: 0.8rem; color: #666; }
-        input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; margin-top: 5px; font-family: inherit; box-sizing: border-box; }
+        input, textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; margin-top: 5px; font-family: inherit; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 150px; font-size: 0.8rem; }
         .btn { border: none; padding: 15px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 20px; background: var(--blue); color: white; transition: 0.3s; }
         .btn:hover { background: var(--dark); }
         .album-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f9f9f9; border-radius: 10px; margin-top: 10px; border: 1px solid #eee; }
         .delete-btn { color: var(--red); border: none; background: none; cursor: pointer; font-size: 1.1rem; }
         .info-text { font-size: 0.75rem; color: #888; margin-top: 5px; line-height: 1.4; }
+        .count-badge { background: var(--blue); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="card">
-        <h2><i class="fab fa-google"></i> Gestion des Albums Photos</h2>
+        <h2><i class="fas fa-images"></i> Gestion des Albums Photos</h2>
         
         <label>Titre de l'album (Ex: Sortie #1)</label>
         <input type="text" id="album-title" placeholder="Utilisez 'Sortie #X' pour le calendrier">
-        <p class="info-text">Le titre doit correspondre à celui du calendrier (ex: "Sortie #1").</p>
+        <p class="info-text">Indispensable pour faire le lien avec le calendrier.</p>
         
-        <label>Lien de partage Google Photos</label>
-        <input type="url" id="album-link" placeholder="Ex: https://photos.app.goo.gl/votre_lien">
-        <p class="info-text">C'est le lien que vous obtenez directement depuis Google Photos (créer un lien de partage).</p>
+        <label>Liens directs des photos (Un lien par ligne)</label>
+        <textarea id="album-links" placeholder="Collez ici tous vos liens d'images (googleusercontent.com...)"></textarea>
+        <p class="info-text">Astuce : Utilisez un extracteur de liens pour copier toutes les photos d'un album Google d'un coup.</p>
 
-        <button class="btn" onclick="addAlbum()">Ajouter / Mettre à jour l'album</button>
+        <button class="btn" onclick="addAlbum()">Enregistrer l'album</button>
 
         <hr style="margin:25px 0; border:0; border-top:1px solid #eee;">
-        <h3>Albums enregistrés :</h3>
+        <h3>Albums en ligne :</h3>
         <div id="album-list"></div>
     </div>
 </div>
@@ -49,50 +51,50 @@
         const list = document.getElementById('album-list');
         list.innerHTML = albums.map((a, i) => `
             <div class="album-item">
-                <span><b>${a.title}</b></span>
+                <span><b>${a.title}</b> <span class="count-badge">${a.photos ? a.photos.length : 0} photos</span></span>
                 <button class="delete-btn" onclick="deleteAlbum(${i})"><i class="fas fa-trash"></i></button>
             </div>
-        `).join('') || "<p style='color:gray; font-size:0.8rem;'>Aucun album pour le moment.</p>";
+        `).join('') || "<p style='color:gray; font-size:0.8rem;'>Aucun album enregistré.</p>";
     }
 
     function addAlbum() {
         const title = document.getElementById('album-title').value.trim();
-        const link = document.getElementById('album-link').value.trim();
+        const linksText = document.getElementById('album-links').value.trim();
 
-        if(!title || !link) {
-            alert("Veuillez remplir le titre et le lien de l'album.");
+        if(!title || !linksText) {
+            alert("Veuillez remplir le titre et ajouter des liens.");
             return;
         }
-        if(!title.includes("#") || !title.startsWith("Sortie")) {
-            alert("Le titre doit être au format 'Sortie #X' (ex: Sortie #1).");
-            return;
-        }
-        if(!link.startsWith("https://photos.app.goo.gl/")) {
-            alert("Le lien doit être un lien de partage Google Photos (commence par https://photos.app.goo.gl/).");
-            return;
-        }
+
+        // On transforme le texte du textarea en tableau (Array)
+        const photosArray = linksText.split('\n')
+                                     .map(line => line.trim())
+                                     .filter(line => line.length > 0);
 
         let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
         
-        // Vérifier si un album avec le même titre existe déjà pour le mettre à jour
         const existingIndex = albums.findIndex(a => a.title === title);
+        
         if (existingIndex > -1) {
-            albums[existingIndex] = { title, link };
-            alert("Album mis à jour !");
+            // Mise à jour de l'album existant
+            albums[existingIndex] = { title: title, photos: photosArray };
+            alert("Album '" + title + "' mis à jour !");
         } else {
-            albums.push({ title, link });
+            // Nouvel album
+            albums.push({ title: title, photos: photosArray });
             alert("Album ajouté avec succès !");
         }
         
         localStorage.setItem('skiGallery', JSON.stringify(albums));
         
+        // Nettoyage des champs
         document.getElementById('album-title').value = '';
-        document.getElementById('album-link').value = '';
+        document.getElementById('album-links').value = '';
         loadAlbums();
     }
 
     function deleteAlbum(index) {
-        if(confirm("Confirmer la suppression de cet album ?")) {
+        if(confirm("Confirmer la suppression ?")) {
             let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
             albums.splice(index, 1);
             localStorage.setItem('skiGallery', JSON.stringify(albums));
