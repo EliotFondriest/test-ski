@@ -19,7 +19,6 @@
         .btn:hover { background: var(--dark); }
         .album-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f9f9f9; border-radius: 10px; margin-top: 10px; border: 1px solid #eee; }
         .delete-btn { color: var(--red); border: none; background: none; cursor: pointer; font-size: 1.1rem; }
-        .info-text { font-size: 0.75rem; color: #888; margin-top: 5px; line-height: 1.4; }
         .count-badge { background: var(--blue); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
     </style>
 </head>
@@ -27,20 +26,18 @@
 
 <div class="container">
     <div class="card">
-        <h2><i class="fas fa-images"></i> Gestion des Albums Photos</h2>
+        <h2><i class="fas fa-cog"></i> Admin Photos</h2>
         
         <label>Titre de l'album (Ex: Sortie #1)</label>
-        <input type="text" id="album-title" placeholder="Utilisez 'Sortie #X' pour le calendrier">
-        <p class="info-text">Indispensable pour faire le lien avec le calendrier.</p>
+        <input type="text" id="album-title" placeholder="Sortie #X">
         
-        <label>Liens directs des photos (Un lien par ligne)</label>
-        <textarea id="album-links" placeholder="Collez ici tous vos liens d'images (googleusercontent.com...)"></textarea>
-        <p class="info-text">Astuce : Utilisez un extracteur de liens pour copier toutes les photos d'un album Google d'un coup.</p>
+        <label>Liens des photos (Un par ligne)</label>
+        <textarea id="album-links" placeholder="Collez les liens directs ici..."></textarea>
+        <p style="font-size:0.7rem; color:#888;">Note : Les nouveaux liens seront ajoutés aux anciens.</p>
 
-        <button class="btn" onclick="addAlbum()">Enregistrer l'album</button>
+        <button class="btn" onclick="addAlbum()">Enregistrer / Ajouter</button>
 
         <hr style="margin:25px 0; border:0; border-top:1px solid #eee;">
-        <h3>Albums en ligne :</h3>
         <div id="album-list"></div>
     </div>
 </div>
@@ -51,53 +48,43 @@
         const list = document.getElementById('album-list');
         list.innerHTML = albums.map((a, i) => `
             <div class="album-item">
-                <span><b>${a.title}</b> <span class="count-badge">${a.photos ? a.photos.length : 0} photos</span></span>
+                <span><b>${a.title}</b> <span class="count-badge">${a.photos ? a.photos.length : 0} im.</span></span>
                 <button class="delete-btn" onclick="deleteAlbum(${i})"><i class="fas fa-trash"></i></button>
             </div>
-        `).join('') || "<p style='color:gray; font-size:0.8rem;'>Aucun album enregistré.</p>";
+        `).join('') || "<p>Aucun album.</p>";
     }
 
     function addAlbum() {
-    const title = document.getElementById('album-title').value.trim();
-    const linksText = document.getElementById('album-links').value.trim();
+        const title = document.getElementById('album-title').value.trim();
+        const linksText = document.getElementById('album-links').value.trim();
+        if(!title || !linksText) return alert("Remplissez tout !");
 
-    if(!title || !linksText) {
-        alert("Veuillez remplir le titre et ajouter des liens.");
-        return;
+        const newPhotos = linksText.split('\n').map(l => l.trim()).filter(l => l.length > 10);
+        let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+        const idx = albums.findIndex(a => a.title === title);
+
+        if (idx > -1) {
+            // Fusionne sans doublons
+            albums[idx].photos = [...new Set([...(albums[idx].photos || []), ...newPhotos])];
+            alert("Photos ajoutées !");
+        } else {
+            albums.push({ title, photos: newPhotos });
+            alert("Album créé !");
+        }
+        
+        localStorage.setItem('skiGallery', JSON.stringify(albums));
+        document.getElementById('album-links').value = '';
+        loadAlbums();
     }
 
-    const newPhotos = linksText.split('\n')
-                               .map(line => line.trim())
-                               .filter(line => line.length > 0);
-
-    let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
-    const existingIndex = albums.findIndex(a => a.title === title);
-    
-    if (existingIndex > -1) {
-        // AU LIEU DE REMPLACER, ON AJOUTE (CONCAT)
-        // On utilise Set pour éviter les doublons si tu colles deux fois le même lien
-        const oldPhotos = albums[existingIndex].photos || [];
-        albums[existingIndex].photos = [...new Set([...oldPhotos, ...newPhotos])];
-        alert("Nouvelles photos ajoutées à l'album existant !");
-    } else {
-        albums.push({ title: title, photos: newPhotos });
-        alert("Album créé avec succès !");
-    }
-    
-    localStorage.setItem('skiGallery', JSON.stringify(albums));
-    document.getElementById('album-links').value = ''; // On vide juste les liens
-    loadAlbums();
-}
-
-    function deleteAlbum(index) {
-        if(confirm("Confirmer la suppression ?")) {
-            let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
-            albums.splice(index, 1);
+    function deleteAlbum(i) {
+        if(confirm("Supprimer ?")) {
+            let albums = JSON.parse(localStorage.getItem('skiGallery'));
+            albums.splice(i, 1);
             localStorage.setItem('skiGallery', JSON.stringify(albums));
             loadAlbums();
         }
     }
-
     window.onload = loadAlbums;
 </script>
 </body>
