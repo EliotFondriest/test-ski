@@ -17,82 +17,61 @@
         h1 { flex: 1; text-align: center; font-size: 1.1rem; margin: 0; color: var(--blue); text-transform: uppercase; }
         .content { padding: 20px; max-width: 1100px; margin: 0 auto; }
         
-        /* Conteneur Fond Blanc */
+        /* Ton fond blanc */
         #gallery-container { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            min-height: 650px; /* Important pour que ça ne soit pas tout petit */
+            background: white; border-radius: 20px; padding: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); min-height: 600px; 
         }
-        .loading-text { text-align: center; padding: 50px; color: #888; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="nav">
         <a href="calendrier.html" class="back-btn"><i class="fas fa-arrow-left"></i> RETOUR</a>
-        <h1 id="album-name">Chargement...</h1>
+        <h1 id="album-name">Album Photos</h1>
         <div style="width:80px"></div> 
     </div>
 
     <div class="content">
         <div id="gallery-container">
-            <div id="status-message" class="loading-text">
-                <i class="fas fa-spinner fa-spin"></i> Initialisation de l'album...
+            <div id="gallery-target">
+                <p style="text-align:center; padding:50px; color:#888;">Chargement de la galerie...</p>
             </div>
         </div>
     </div>
 
     <script>
-        function loadGallery() {
-            // 1. Récupérer le numéro de sortie depuis l'URL (?sortie=1)
-            const urlParams = new URLSearchParams(window.location.search);
-            const sortieId = urlParams.get('sortie');
+        window.onload = function() {
+            // 1. On récupère le numéro de la sortie (ex: ?sortie=1)
+            const params = new URLSearchParams(window.location.search);
+            const sortieId = params.get('sortie');
             
+            // 2. On récupère tes albums enregistrés dans l'Admin
             const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
-            // On cherche l'album qui correspond au numéro (ex: "Sortie #1")
             const album = albums.find(a => a.title.includes("#" + sortieId));
-
-            const container = document.getElementById('gallery-container');
 
             if (album && album.link) {
                 document.getElementById('album-name').innerText = album.title;
                 
-                // 2. Nettoyer le lien (doit être un lien court https://photos.app.goo.gl/...)
-                const cleanLink = album.link.trim();
-
-                // 3. Injecter le code HTML spécifique attendu par le script
-                container.innerHTML = `
+                // 3. ON INJECTE LA STRUCTURE DE PUBLIC ALBUM
+                // On utilise le lien ${album.link} qui vient de ton Admin
+                document.getElementById('gallery-target').innerHTML = `
                     <div class="pa-gallery-player-widget" 
-                         style="width:100%; height:700px; display:none;"
-                         data-link="${cleanLink}"
-                         data-title="${album.title}"
-                         data-description="Saison 2026">
-                         <object data="${cleanLink}"></object>
+                         style="width:100%; height:650px; display:none;"
+                         data-link="${album.link}"
+                         data-title="${album.title}">
+                         <object data="${album.link}"></object>
                     </div>
                 `;
 
-                // 4. Forcer le script à scanner la page pour afficher les photos
-                const checkInterval = setInterval(() => {
-                    if (window.pa && window.pa.embed) {
-                        window.pa.embed.init();
-                        clearInterval(checkInterval);
-                    }
-                }, 500);
-
+                // 4. On réveille le script PublicAlbum pour qu'il transforme le lien en photos
+                if (window.pa && window.pa.embed) {
+                    setTimeout(() => { window.pa.embed.init(); }, 800);
+                }
             } else {
-                container.innerHTML = `
-                    <div class="loading-text">
-                        <i class="fas fa-exclamation-triangle"></i><br>
-                        Album non trouvé dans l'Admin.<br>
-                        Vérifiez que le titre contient bien "#${sortieId}"
-                    </div>`;
+                document.getElementById('gallery-target').innerHTML = "Lien Google Photos non trouvé pour cette sortie.";
             }
-        }
-
-        // Lancer au chargement
-        window.addEventListener('load', loadGallery);
+        };
     </script>
 </body>
 </html>
