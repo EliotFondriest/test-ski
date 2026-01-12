@@ -186,47 +186,43 @@
         </div>
     </div>
 
-    <script>
-    window.onload = function() {
-        // 1. On récupère les résumés (appréciations)
-        const appreciations = JSON.parse(localStorage.getItem('skiAppreciations')) || {};
-        
-        // 2. On récupère les albums Google Photos enregistrés
-        const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+    // REMPLACEZ VOTRE BLOC <script> DANS LE CALENDRIER PAR CELUI-CI
+<script>
+window.onload = function() {
+    const appreciations = JSON.parse(localStorage.getItem('skiAppreciations')) || {};
+    const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
 
-        document.querySelectorAll('.event-card').forEach(card => {
-            const id = card.getAttribute('data-sortie');
-            const textDiv = card.querySelector('.appreciation-text');
-            const badge = card.querySelector('.status-badge');
-            const btnPhotos = card.querySelector('.btn-photos');
+    document.querySelectorAll('.event-card').forEach(card => {
+        const id = card.getAttribute('data-sortie');
+        const textDiv = card.querySelector('.appreciation-text');
+        const badge = card.querySelector('.status-badge');
+        const btnPhotos = card.querySelector('.btn-photos');
 
-            // --- GESTION DU RÉSUMÉ ET DU STATUT ---
-            if (appreciations[id] && appreciations[id].trim() !== "") {
-                textDiv.innerText = "“ " + appreciations[id] + " ”";
-                textDiv.style.display = "block";
-                badge.innerText = "PASSÉE";
-                card.classList.add('past');
-            }
+        // 1. Gestion des textes de résumé
+        if (appreciations[id]) {
+            textDiv.innerText = "“ " + appreciations[id] + " ”";
+            textDiv.style.display = "block";
+            badge.innerText = "PASSÉE";
+            card.classList.add('past');
+        }
 
-            // --- GESTION DU LIEN PHOTOS ---
-            // On cherche si un album contient le numéro de la sortie dans son titre
-            const albumCorrespondant = albums.find(a => 
-                a.title.toLowerCase().includes("sortie " + id) || 
-                a.title.toLowerCase().includes("sortie #" + id)
-            );
+        // 2. Gestion automatique du lien photo
+        // On cherche un album qui contient "Sortie #X" dans son titre
+        const albumTrouve = albums.find(a => a.title.includes("Sortie #" + id));
 
-            if (albumCorrespondant) {
-                // Si on trouve un album Google Photos pour cette sortie
-                btnPhotos.href = albumCorrespondant.link;
-                btnPhotos.target = "_blank"; // Ouvre dans un nouvel onglet
-                btnPhotos.style.background = "#4285F4"; // Couleur Google
-                btnPhotos.innerHTML = '<i class="fab fa-google"></i> Album';
-            } else {
-                // Sinon, on laisse le lien vers la page galerie par défaut
-                btnPhotos.href = "galerie.html#" + id;
-            }
-        });
-    };
+        if (albumTrouve) {
+            // Si trouvé, on redirige vers notre page de lecture avec l'ID
+            btnPhotos.href = "photoscode.html?sortie=" + id;
+            btnPhotos.style.background = "#009ee0";
+            btnPhotos.innerHTML = '<i class="fas fa-camera"></i> Voir les photos';
+        } else {
+            // Si pas d'album, on désactive le bouton
+            btnPhotos.style.opacity = "0.3";
+            btnPhotos.style.pointerEvents = "none";
+            btnPhotos.innerText = "Bientôt";
+        }
+    });
+};
 </script>
 </body>
 </html>

@@ -3,112 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion Ski Club - Admin</title>
+    <title>Admin - Ski Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --blue: #009ee0; --red: #e30613; --dark: #1a1a1a; --gray: #f4f7f9; --green: #2ecc71; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--gray); margin: 0; padding: 15px; color: var(--dark); }
+        body { font-family: 'Montserrat', sans-serif; background: var(--gray); margin: 0; padding: 15px; }
         .container { max-width: 600px; margin: 0 auto; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        #badge { font-weight: 900; padding: 8px 12px; border-radius: 8px; font-size: 0.7rem; text-transform: uppercase; }
-        .badge-admin { border: 1px solid var(--red); color: var(--red); background: #ffebee; }
-        .badge-benevole { border: 1px solid var(--blue); color: var(--blue); background: #e3f2fd; }
-
         .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); margin-bottom: 20px; border-top: 6px solid var(--blue); }
         h2 { margin-top: 0; font-weight: 900; text-transform: uppercase; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
-
-        .admin-only { display: none; }
-        .counter-circle { width: 70px; height: 70px; border: 5px solid var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 10px auto; font-size: 1.5rem; font-weight: 900; }
-        
-        .btn { border: none; padding: 14px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; transition: 0.2s; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-green { background: var(--green); color: white; }
-        .btn-blue { background: var(--blue); color: white; }
-        
         label { display: block; margin-top: 15px; font-weight: 700; font-size: 0.75rem; color: #666; }
-        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-family: inherit; margin-top: 5px; font-size: 16px; }
-        
+        input, select { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; margin-top: 5px; font-family: inherit; }
+        .btn { border: none; padding: 14px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; transition: 0.2s; font-family: inherit; }
+        .btn-blue { background: var(--blue); color: white; }
         .album-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 8px; margin-bottom: 5px; font-size: 0.8rem; }
+        .info-alert { background: #fff3cd; color: #856404; padding: 10px; border-radius: 8px; font-size: 0.7rem; margin-bottom: 15px; border: 1px solid #ffeeba; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <span><i class="fas fa-user-circle"></i> <span id="badge">Chargement...</span></span>
-        <button onclick="logout()" style="border:none; background:none; color:var(--red); font-weight:bold; cursor:pointer;">SORTIR</button>
-    </div>
-
-    <div class="card admin-only">
-        <h2><i class="fas fa-check-square"></i> Appel du jour</h2>
-        <div class="counter-circle" id="total-count">0</div>
-        <button class="btn btn-green" onclick="downloadAppelTxt()">
-            <i class="fas fa-file-download"></i> Télécharger la liste
-        </button>
-        <button onclick="resetAppel()" style="display:block; margin: 15px auto 0; background:none; border:none; color:#bbb; font-size:0.6rem; text-decoration:underline;">Réinitialiser pour samedi</button>
-    </div>
-
     <div class="card">
         <h2><i class="fab fa-google"></i> Albums Photos</h2>
-        
-        <label>Titre de l'album (ex: Sortie 1 - Le Revard)</label>
-        <input type="text" id="album-title" placeholder="Nom de la sortie">
-        
-        <label>Lien de partage Google Photos</label>
-        <input type="url" id="album-link" placeholder="https://photos.app.goo.gl/...">
+        <div class="info-alert">
+            <b>IMPORTANT :</b> Utilisez le titre exact <b>Sortie #1</b>, <b>Sortie #2</b>, etc., pour que le lien se fasse automatiquement avec le calendrier.
+        </div>
 
-        <label>Lien d'une photo (couverture)</label>
-        <input type="url" id="album-cover" placeholder="Optionnel : lien d'une image">
+        <label>Titre de l'album (Format: Sortie #X)</label>
+        <input type="text" id="album-title" placeholder="Ex: Sortie #1 - St François">
+        
+        <label>Lien d'intégration (via publicalbum.org)</label>
+        <input type="url" id="album-link" placeholder="https://...">
 
         <button class="btn btn-blue" onclick="addAlbum()">Ajouter l'album</button>
 
         <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-        <h3>Albums en ligne :</h3>
         <div id="album-list-admin"></div>
-    </div>
-
-    <div class="card admin-only" style="border-top-color: var(--red);">
-        <h2><i class="fas fa-cog"></i> Réglages Site</h2>
-        <label>Date Bourse aux Skis :</label>
-        <input type="text" id="bourse-in" placeholder="Ex: 15 Novembre 2026">
-        
-        <label>Inscriptions Ouvertes :</label>
-        <select id="reg-in">
-            <option value="false">Fermé</option>
-            <option value="true">Ouvert</option>
-        </select>
-        <button class="btn" style="background:var(--dark); color:white" onclick="saveSettings()">Appliquer</button>
     </div>
 </div>
 
 <script>
-    const role = localStorage.getItem('userRole');
-
-    function init() {
-        const badge = document.getElementById('badge');
-        badge.innerText = role;
-
-        if(role === 'Admin') {
-            badge.className = 'badge-admin';
-            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-        } else {
-            badge.className = 'badge-benevole';
-        }
-        loadData();
-    }
-
     function loadData() {
-        // Stats Appel
-        const presences = JSON.parse(localStorage.getItem('skiPresences')) || [];
-        document.getElementById('total-count').innerText = presences.length;
-
-        // Réglages
-        const settings = JSON.parse(localStorage.getItem('clubSettings')) || {bourse:'', regOpen:false};
-        document.getElementById('bourse-in').value = settings.bourse || '';
-        document.getElementById('reg-in').value = settings.regOpen.toString();
-
-        // Liste des albums
         const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
         const listDiv = document.getElementById('album-list-admin');
         listDiv.innerHTML = albums.map((a, index) => `
@@ -116,31 +51,25 @@
                 <span><b>${a.title}</b></span>
                 <button onclick="deleteAlbum(${index})" style="color:var(--red); border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
             </div>
-        `).join('') || "<p style='font-size:0.7rem; color:#999;'>Aucun album.</p>";
+        `).join('') || "<p>Aucun album.</p>";
     }
 
     function addAlbum() {
         const title = document.getElementById('album-title').value;
         const link = document.getElementById('album-link').value;
-        const cover = document.getElementById('album-cover').value;
-
-        if(!title || !link) return alert("Le titre et le lien sont obligatoires !");
+        if(!title || !link) return alert("Remplissez les champs !");
 
         let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
-        albums.push({ title, link, cover });
+        albums.push({ title, link });
         localStorage.setItem('skiGallery', JSON.stringify(albums));
         
-        // Reset champs
         document.getElementById('album-title').value = '';
         document.getElementById('album-link').value = '';
-        document.getElementById('album-cover').value = '';
-        
-        alert("Album ajouté !");
         loadData();
     }
 
     function deleteAlbum(index) {
-        if(confirm("Supprimer cet album ?")) {
+        if(confirm("Supprimer ?")) {
             let albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
             albums.splice(index, 1);
             localStorage.setItem('skiGallery', JSON.stringify(albums));
@@ -148,38 +77,7 @@
         }
     }
 
-    function downloadAppelTxt() {
-        const presences = JSON.parse(localStorage.getItem('skiPresences')) || [];
-        if (presences.length === 0) return alert("Liste vide !");
-        let txt = "LISTE D'APPEL - " + new Date().toLocaleDateString() + "\n\n";
-        presences.forEach(p => { txt += `[ ] ${p.nom.toUpperCase()} ${p.prenom} (${p.telephone})\n`; });
-        const blob = new Blob([txt], { type: 'text/plain' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = "APPEL_SKI.txt";
-        a.click();
-    }
-
-    function saveSettings() {
-        const s = { 
-            bourse: document.getElementById('bourse-in').value, 
-            regOpen: document.getElementById('reg-in').value === "true" 
-        };
-        localStorage.setItem('clubSettings', JSON.stringify(s));
-        alert("Réglages enregistrés !");
-    }
-
-    function resetAppel() {
-        if(confirm("Vider la liste d'appel ?")) {
-            localStorage.removeItem('skiPresences');
-            loadData();
-        }
-    }
-
-    function logout() { localStorage.removeItem('userRole'); window.location.href = 'index.html'; }
-
-    window.onload = init;
+    window.onload = loadData;
 </script>
-
 </body>
 </html>

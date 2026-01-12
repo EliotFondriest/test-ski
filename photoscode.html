@@ -2,110 +2,34 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galerie Photos | Ski Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Galerie - Ski Club</title>
     <style>
-        :root { --blue: #009ee0; --red: #e30613; --dark: #1a1a1a; --gray: #f4f7f9; }
-        * { box-sizing: border-box; scroll-behavior: smooth; }
-        body { font-family: 'Montserrat', sans-serif; margin: 0; background: var(--gray); padding: 15px; }
-        
-        header { background: white; padding: 20px; border-radius: 15px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        h1 { font-size: 1.5rem; margin: 15px 0 0; }
-
-        .btn-back {
-            display: inline-flex; align-items: center; gap: 8px; padding: 10px 15px; 
-            background: var(--red); color: white; text-decoration: none; 
-            border-radius: 8px; font-weight: bold; font-size: 0.8rem;
-        }
-
-        /* Liste des Albums */
-        .album-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
-        }
-
-        .album-card {
-            background: white; border-radius: 15px; overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.3s;
-            border-top: 5px solid var(--blue);
-        }
-        .album-card:active { transform: scale(0.98); }
-
-        .album-cover {
-            width: 100%; height: 180px; background: #ddd;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
-        }
-        .album-cover img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .album-info { padding: 15px; }
-        .album-info h3 { margin: 0 0 10px; font-size: 1.1rem; color: var(--dark); }
-        
-        .btn-view {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            background: #4285F4; /* Bleu Google */
-            color: white; text-decoration: none; padding: 12px;
-            border-radius: 8px; font-weight: 900; font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        @media (max-width: 600px) {
-            .album-grid { grid-template-columns: 1fr; }
-        }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; overflow: hidden; }
+        .nav { background: #1a1a1a; color: white; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
+        .back-btn { color: white; text-decoration: none; font-weight: bold; }
+        iframe { width: 100%; height: calc(100vh - 50px); border: none; }
     </style>
 </head>
 <body>
-
-    <header>
-        <a href="calendrier.html" class="btn-back"><i class="fas fa-arrow-left"></i> Retour</a>
-        <h1>Albums Souvenirs</h1>
-        <p style="font-size: 0.8rem; color: #666;">Cliquez sur un album pour voir toutes les photos</p>
-    </header>
-
-    <div class="album-grid" id="album-container">
-        </div>
+    <div class="nav">
+        <a href="calendrier.html" class="back-btn">← Retour au calendrier</a>
+        <span id="album-title">Chargement...</span>
+    </div>
+    <div id="viewer"></div>
 
     <script>
-        window.onload = function() {
-            const container = document.getElementById('album-container');
-            
-            // On récupère les réglages de l'admin (qui doit maintenant contenir les LIENS Google Photos)
-            // Format attendu dans localStorage 'skiGallery' : 
-            // [{ title: "Sortie Le Revard", link: "https://photos.app.goo/...", cover: "URL_IMAGE" }]
-            const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
+        const urlParams = new URLSearchParams(window.location.search);
+        const sortieId = urlParams.get('sortie');
+        const albums = JSON.parse(localStorage.getItem('skiGallery')) || [];
 
-            if (albums.length === 0) {
-                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">Aucun album disponible pour le moment.</p>';
-                return;
-            }
+        const album = albums.find(a => a.title.includes("Sortie #" + sortieId));
 
-            albums.forEach(album => {
-                const card = `
-                    <div class="album-card" id="${album.title}">
-                        <div class="album-cover">
-                            <img src="${album.cover || 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=500'}" alt="Couverture">
-                        </div>
-                        <div class="album-info">
-                            <h3>${album.title}</h3>
-                            <a href="${album.link}" target="_blank" class="btn-view">
-                                <i class="fab fa-google"></i> Voir sur Google Photos
-                            </a>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += card;
-            });
-
-            // Gestion du scroll auto vers un album précis
-            if(window.location.hash) {
-                setTimeout(() => {
-                    const hash = decodeURIComponent(window.location.hash);
-                    const target = document.querySelector(hash);
-                    if(target) target.scrollIntoView();
-                }, 500);
-            }
-        };
+        if(album) {
+            document.getElementById('album-title').innerText = album.title;
+            document.getElementById('viewer').innerHTML = `<iframe src="${album.link}" allowfullscreen></iframe>`;
+        } else {
+            document.body.innerHTML = "<h1>Album non trouvé</h1><a href='calendrier.html'>Retour</a>";
+        }
     </script>
 </body>
 </html>
